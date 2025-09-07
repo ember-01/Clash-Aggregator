@@ -7,7 +7,7 @@ const http = require("http");
 const YAML = require("yaml");
 
 // Read sources.txt (list of URLs)
-const sourcesFile = path.join(__dirname, "sources.txt");
+const sourcesFile = path.join(__dirname, "../sources.txt");
 const urls = fs.readFileSync(sourcesFile, "utf8")
   .split("\n")
   .map(l => l.trim())
