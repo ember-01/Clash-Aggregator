@@ -10,3 +10,4 @@ https://raw.githubusercontent.com/Mosifree/-FREE2CONFIG/refs/heads/main/Clash_Mo
 https://raw.githubusercontent.com/zhangkaiitugithub/passcro/refs/heads/main/meta.yaml
 https://raw.githubusercontent.com/dongchengjie/airport/main/subs/merged/tested_within.yaml
 https://raw.githubusercontent.com/anaer/Sub/refs/heads/main/clash.yaml
+https://raw.githubusercontent.com/MEHR1DAD/V2RayAggregator/refs/heads/master/subscription/SG_sub_100.txt
