@@ -40,28 +40,121 @@ def get_flag_by_country_code(code):
         'SV': '🇸🇻', 'GT': '🇬🇹', 'BZ': '🇧🇿', 'BO': '🇧🇴', 'PY': '🇵🇾',
         'UY': '🇺🇾', 'GY': '🇬🇾', 'SR': '🇸🇷', 'GF': '🇬🇫', 'JM': '🇯🇲',
         'TT': '🇹🇹', 'BB': '🇧🇧', 'BS': '🇧🇸', 'BM': '🇧🇲', 'DO': '🇩🇴',
-        'PR': '🇵🇷', 'VI': '🇻🇮', 'CU': '🇨🇺', 'HT': '🇭🇹', 'GP': '🇬🇵',
-        'MQ': '🇲🇶', 'GD': '🇬🇩', 'LC': '🇱🇨', 'VC': '🇻🇨', 'AG': '🇦🇬',
-        'DM': '🇩🇲', 'KN': '🇰🇳', 'KY': '🇰🇾', 'TC': '🇹🇨', 'AW': '🇦🇼',
-        'FJ': '🇫🇯', 'PG': '🇵🇬', 'SB': '🇸🇧', 'VU': '🇻🇺', 'NC': '🇳🇨',
-        'PF': '🇵🇫', 'WS': '🇼🇸', 'GU': '🇬🇺', 'MP': '🇲🇵', 'AS': '🇦🇸',
-        'CK': '🇨🇰', 'TO': '🇹🇴', 'PW': '🇵🇼', 'MH': '🇲🇭', 'FM': '🇫🇲',
-        'KI': '🇰🇮', 'TL': '🇹🇱', 'BT': '🇧🇹', 'MV': '🇲🇻', 'ZM': '🇿🇲',
-        'CD': '🇨🇩', 'CG': '🇨🇬', 'CM': '🇨🇲', 'GA': '🇬🇦', 'GQ': '🇬🇶',
-        'CF': '🇨🇫', 'TD': '🇹🇩', 'DJ': '🇩🇯', 'SO': '🇸🇴', 'RW': '🇷🇼',
-        'BI': '🇧🇮', 'MW': '🇲🇼', 'LS': '🇱🇸', 'SZ': '🇸🇿', 'KM': '🇰🇲',
-        'SC': '🇸🇨', 'GM': '🇬🇲', 'GW': '🇬🇼', 'ML': '🇲🇱', 'MR': '🇲🇷',
-        'NE': '🇳🇪', 'BF': '🇧🇫', 'TG': '🇹🇬', 'BJ': '🇧🇯', 'GN': '🇬🇳',
-        'SL': '🇸🇱', 'LR': '🇱🇷', 'CV': '🇨🇻', 'ST': '🇸🇹', 'ER': '🇪🇷',
-        'SS': '🇸🇸', 'LI': '🇱🇮', 'SM': '🇸🇲', 'VA': '🇻🇦', 'AD': '🇦🇩',
-        'MC': '🇲🇨', 'NR': '🇳🇷', 'TV': '🇹🇻', 'NU': '🇳🇺', 'TK': '🇹🇰'
+        'PR': '🇵🇷', 'VI': '🇻🇮', 'CU': '🇨🇺', 'HT': '🇭🇹', 'GP': '🇬🇵'
     }
     return flags.get(code.upper(), '🌍')
+
+def validate_and_clean_node(node):
+    """Validate and clean node configuration"""
+    if not isinstance(node, dict):
+        return None
+    
+    # Required fields for all proxy types
+    if 'type' not in node or 'server' not in node or 'port' not in node:
+        return None
+    
+    # Clean common fields
+    node_type = node.get('type', '').lower()
+    
+    # Validate port
+    try:
+        port = int(node.get('port', 0))
+        if port <= 0 or port > 65535:
+            return None
+        node['port'] = port
+    except:
+        return None
+    
+    # Type-specific validation
+    if node_type == 'ss':
+        if 'cipher' not in node or 'password' not in node:
+            return None
+            
+    elif node_type == 'vmess':
+        if 'uuid' not in node:
+            return None
+        # Ensure alterId is integer
+        if 'alterId' in node:
+            try:
+                node['alterId'] = int(node['alterId'])
+            except:
+                node['alterId'] = 0
+                
+    elif node_type == 'trojan':
+        if 'password' not in node:
+            return None
+            
+    elif node_type in ['vless', 'reality']:
+        if 'uuid' not in node:
+            return None
+        
+        # Fix REALITY specific fields
+        if 'reality-opts' in node:
+            reality_opts = node['reality-opts']
+            
+            # Validate and fix short-id
+            if 'short-id' in reality_opts:
+                short_id = reality_opts['short-id']
+                # Short ID should be hex string, if invalid, remove it
+                if not isinstance(short_id, str) or not all(c in '0123456789abcdefABCDEF' for c in short_id):
+                    # Set a default valid short-id or remove the field
+                    reality_opts['short-id'] = ''
+            
+            # Ensure public-key exists and is string
+            if 'public-key' in reality_opts and not isinstance(reality_opts['public-key'], str):
+                del reality_opts['public-key']
+    
+    elif node_type == 'ssr':
+        if 'cipher' not in node or 'password' not in node:
+            return None
+            
+    elif node_type == 'http' or node_type == 'https':
+        # HTTP/HTTPS proxies are simpler
+        pass
+        
+    elif node_type == 'socks5':
+        # SOCKS5 validation
+        pass
+        
+    elif node_type == 'snell':
+        if 'psk' not in node:
+            return None
+            
+    elif node_type == 'tuic':
+        if 'token' not in node and 'uuid' not in node:
+            return None
+            
+    elif node_type == 'hysteria':
+        if 'auth_str' not in node and 'auth' not in node:
+            return None
+            
+    elif node_type == 'hysteria2' or node_type == 'hy2':
+        if 'password' not in node:
+            return None
+        node['type'] = 'hysteria2'  # Normalize type
+        
+    elif node_type == 'wireguard' or node_type == 'wg':
+        if 'private-key' not in node:
+            return None
+        node['type'] = 'wireguard'  # Normalize type
+    else:
+        # Unknown type, skip
+        return None
+    
+    # Remove problematic fields that might cause issues
+    problematic_fields = ['_index', '_type', 'clashType', 'proxies', 'rules']
+    for field in problematic_fields:
+        node.pop(field, None)
+    
+    # Ensure name exists
+    if 'name' not in node:
+        node['name'] = 'Unnamed'
+    
+    return node
 
 def get_server_location(server_ip):
     """Get country code from server IP using ip-api.com"""
     try:
-        # First check if it's a valid IP or domain
         if not server_ip:
             return 'UN'
         
@@ -70,13 +163,12 @@ def get_server_location(server_ip):
             socket.inet_aton(server_ip)
             ip = server_ip
         except socket.error:
-            # It's a domain, resolve it
             try:
                 ip = socket.gethostbyname(server_ip)
             except:
                 return 'UN'
         
-        # Query ip-api.com for location (free, no API key needed)
+        # Query ip-api.com for location
         response = requests.get(
             f'http://ip-api.com/json/{ip}',
             timeout=5
@@ -88,7 +180,7 @@ def get_server_location(server_ip):
                 country_code = data.get('countryCode', 'UN')
                 return country_code
         
-        time.sleep(0.5)  # Rate limiting for free API
+        time.sleep(0.5)  # Rate limiting
         return 'UN'
         
     except Exception as e:
@@ -98,7 +190,6 @@ def get_server_location(server_ip):
 def get_node_server(node):
     """Extract server address from node"""
     if isinstance(node, dict):
-        # Common fields for server address
         for field in ['server', 'add', 'address', 'host']:
             if field in node:
                 return node[field]
@@ -116,7 +207,7 @@ def parse_base64_nodes(content):
             if not line:
                 continue
                 
-            # Parse different protocols
+            # Parse vmess://
             if line.startswith('vmess://'):
                 try:
                     vmess_data = base64.b64decode(line[8:]).decode('utf-8')
@@ -129,11 +220,11 @@ def parse_base64_nodes(content):
                         'uuid': vmess_node.get('id', ''),
                         'alterId': int(vmess_node.get('aid', 0)),
                         'cipher': vmess_node.get('scy', 'auto'),
-                        'tls': vmess_node.get('tls', '') == 'tls',
-                        'network': vmess_node.get('net', 'tcp')
+                        'tls': vmess_node.get('tls', '') == 'tls'
                     }
                     
-                    # Add additional fields if present
+                    if vmess_node.get('net'):
+                        node['network'] = vmess_node['net']
                     if vmess_node.get('host'):
                         node['ws-opts'] = {'headers': {'Host': vmess_node['host']}}
                     if vmess_node.get('path'):
@@ -145,9 +236,9 @@ def parse_base64_nodes(content):
                 except:
                     continue
                     
+            # Parse ss://
             elif line.startswith('ss://'):
                 try:
-                    # Parse shadowsocks URL
                     ss_data = line[5:]
                     if '#' in ss_data:
                         ss_main, ss_name = ss_data.split('#', 1)
@@ -157,24 +248,23 @@ def parse_base64_nodes(content):
                         ss_name = 'Unnamed'
                     
                     if '@' in ss_main:
-                        ss_decoded = base64.b64decode(ss_main.split('@')[0]).decode('utf-8')
-                        cipher, password = ss_decoded.split(':', 1)
+                        method_pass = ss_main.split('@')[0]
                         server_port = ss_main.split('@')[1]
-                        server, port = server_port.rsplit(':', 1)
-                    else:
-                        # Alternative format
-                        ss_decoded = base64.b64decode(ss_main).decode('utf-8')
-                        parts = ss_decoded.split('@')
-                        if len(parts) == 2:
-                            cipher_pass = parts[0].split(':', 1)
-                            server_port = parts[1].rsplit(':', 1)
-                            if len(cipher_pass) == 2 and len(server_port) == 2:
-                                cipher, password = cipher_pass
-                                server, port = server_port
-                            else:
-                                continue
+                        
+                        try:
+                            decoded_mp = base64.b64decode(method_pass + '=' * (4 - len(method_pass) % 4)).decode('utf-8')
+                            cipher, password = decoded_mp.split(':', 1)
+                        except:
+                            continue
+                            
+                        if ':' in server_port:
+                            server, port = server_port.rsplit(':', 1)
+                            if '?' in port:
+                                port = port.split('?')[0]
                         else:
                             continue
+                    else:
+                        continue
                     
                     node = {
                         'name': ss_name,
@@ -188,6 +278,7 @@ def parse_base64_nodes(content):
                 except:
                     continue
                     
+            # Parse trojan://
             elif line.startswith('trojan://'):
                 try:
                     trojan_data = line[9:]
@@ -198,10 +289,18 @@ def parse_base64_nodes(content):
                         trojan_main = trojan_data
                         trojan_name = 'Unnamed'
                     
-                    password, server_port = trojan_main.split('@', 1)
-                    server, port = server_port.rsplit(':', 1)
-                    if '?' in port:
-                        port = port.split('?')[0]
+                    if '@' in trojan_main:
+                        password = trojan_main.split('@')[0]
+                        server_part = trojan_main.split('@')[1]
+                        
+                        if ':' in server_part:
+                            server, port = server_part.rsplit(':', 1)
+                            if '?' in port:
+                                port = port.split('?')[0]
+                        else:
+                            continue
+                    else:
+                        continue
                     
                     node = {
                         'name': trojan_name,
@@ -209,7 +308,6 @@ def parse_base64_nodes(content):
                         'server': server,
                         'port': int(port),
                         'password': password,
-                        'sni': server,
                         'skip-cert-verify': True
                     }
                     nodes.append(node)
@@ -229,11 +327,13 @@ def fetch_subscription(url):
         response = requests.get(url, timeout=10, headers=headers)
         content = response.text.strip()
         
-        # Try parsing as YAML first (standard Clash format)
+        # Try parsing as YAML first
         try:
             data = yaml.safe_load(content)
             if isinstance(data, dict) and 'proxies' in data:
                 return data['proxies']
+            elif isinstance(data, list):
+                return data
         except:
             pass
         
@@ -241,14 +341,6 @@ def fetch_subscription(url):
         nodes = parse_base64_nodes(content)
         if nodes:
             return nodes
-        
-        # Try direct YAML list
-        try:
-            data = yaml.safe_load(content)
-            if isinstance(data, list):
-                return data
-        except:
-            pass
         
         return []
         
@@ -274,13 +366,15 @@ def main():
         nodes = fetch_subscription(url)
         
         for node in nodes:
-            if isinstance(node, dict):
-                server = get_node_server(node)
+            # Validate and clean the node
+            cleaned_node = validate_and_clean_node(node)
+            if cleaned_node:
+                server = get_node_server(cleaned_node)
                 if server and server not in seen_servers:
                     seen_servers.add(server)
-                    all_nodes.append(node)
+                    all_nodes.append(cleaned_node)
     
-    print(f"📊 Collected {len(all_nodes)} unique nodes")
+    print(f"📊 Collected {len(all_nodes)} valid unique nodes")
     
     # Get geo-location for each node
     print("🌍 Checking geo-locations...")
@@ -327,8 +421,7 @@ def main():
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write("# Generated by Clash-Aggregator\n")
-        f.write("# GitHub: https://github.com/YOUR_USERNAME/Clash-Aggregator\n\n")
+        f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
     print(f"✅ Successfully generated clash.yaml")
