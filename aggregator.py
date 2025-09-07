@@ -482,7 +482,7 @@ def main():
     print("=" * 50)
     
     # Configuration
-    ENABLE_HEALTH_CHECK = True  # Set to False to disable health check
+    ENABLE_HEALTH_CHECK = False  # Set to False to disable health check
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
