@@ -44,7 +44,7 @@ def get_flag_by_country_code(code):
     }
     return flags.get(code.upper(), '🌍')
 
-def validate_and_clean_node(node):
+def validate_and_clean_node(node, node_index=0):
     """Validate and clean node configuration"""
     if not isinstance(node, dict):
         return None
@@ -55,6 +55,16 @@ def validate_and_clean_node(node):
     
     # Clean common fields
     node_type = node.get('type', '').lower()
+    
+    # Skip REALITY and VLESS nodes with reality-opts to avoid issues
+    if node_type in ['vless', 'reality'] and 'reality-opts' in node:
+        print(f"   ⚠️ Skipping REALITY/VLESS node #{node_index} due to compatibility issues")
+        return None
+    
+    # Also skip if flow field exists (usually indicates XTLS/REALITY)
+    if 'flow' in node and node['flow']:
+        print(f"   ⚠️ Skipping node #{node_index} with flow field: {node.get('flow')}")
+        return None
     
     # Validate port
     try:
@@ -83,27 +93,18 @@ def validate_and_clean_node(node):
     elif node_type == 'trojan':
         if 'password' not in node:
             return None
+        # Remove skip-cert-verify if false (can cause issues)
+        if 'skip-cert-verify' in node and not node['skip-cert-verify']:
+            del node['skip-cert-verify']
             
-    elif node_type in ['vless', 'reality']:
+    elif node_type == 'vless':
         if 'uuid' not in node:
             return None
-        
-        # Fix REALITY specific fields
-        if 'reality-opts' in node:
-            reality_opts = node['reality-opts']
+        # Remove all REALITY related fields
+        reality_fields = ['reality-opts', 'flow', 'client-fingerprint']
+        for field in reality_fields:
+            node.pop(field, None)
             
-            # Validate and fix short-id
-            if 'short-id' in reality_opts:
-                short_id = reality_opts['short-id']
-                # Short ID should be hex string, if invalid, remove it
-                if not isinstance(short_id, str) or not all(c in '0123456789abcdefABCDEF' for c in short_id):
-                    # Set a default valid short-id or remove the field
-                    reality_opts['short-id'] = ''
-            
-            # Ensure public-key exists and is string
-            if 'public-key' in reality_opts and not isinstance(reality_opts['public-key'], str):
-                del reality_opts['public-key']
-    
     elif node_type == 'ssr':
         if 'cipher' not in node or 'password' not in node:
             return None
@@ -139,12 +140,21 @@ def validate_and_clean_node(node):
         node['type'] = 'wireguard'  # Normalize type
     else:
         # Unknown type, skip
+        print(f"   ⚠️ Skipping unknown proxy type: {node_type}")
         return None
     
     # Remove problematic fields that might cause issues
-    problematic_fields = ['_index', '_type', 'clashType', 'proxies', 'rules']
+    problematic_fields = [
+        '_index', '_type', 'clashType', 'proxies', 'rules',
+        'benchmarkUrl', 'reality-opts', 'flow', 'xudp',
+        'packet-encoding', 'client-fingerprint', 'fingerprint'
+    ]
     for field in problematic_fields:
         node.pop(field, None)
+    
+    # Clean up TLS related fields
+    if 'tls' in node and isinstance(node['tls'], str):
+        node['tls'] = node['tls'].lower() == 'true' or node['tls'] == '1'
     
     # Ensure name exists
     if 'name' not in node:
@@ -184,7 +194,6 @@ def get_server_location(server_ip):
         return 'UN'
         
     except Exception as e:
-        print(f"Error getting location for {server_ip}: {e}")
         return 'UN'
 
 def get_node_server(node):
@@ -219,18 +228,26 @@ def parse_base64_nodes(content):
                         'port': int(vmess_node.get('port', 443)),
                         'uuid': vmess_node.get('id', ''),
                         'alterId': int(vmess_node.get('aid', 0)),
-                        'cipher': vmess_node.get('scy', 'auto'),
-                        'tls': vmess_node.get('tls', '') == 'tls'
+                        'cipher': vmess_node.get('scy', 'auto')
                     }
                     
+                    # TLS
+                    if vmess_node.get('tls') == 'tls':
+                        node['tls'] = True
+                    
+                    # Network type
                     if vmess_node.get('net'):
                         node['network'] = vmess_node['net']
-                    if vmess_node.get('host'):
-                        node['ws-opts'] = {'headers': {'Host': vmess_node['host']}}
-                    if vmess_node.get('path'):
-                        if 'ws-opts' not in node:
-                            node['ws-opts'] = {}
-                        node['ws-opts']['path'] = vmess_node['path']
+                        
+                    # WebSocket options
+                    if vmess_node.get('net') == 'ws':
+                        ws_opts = {}
+                        if vmess_node.get('host'):
+                            ws_opts['headers'] = {'Host': vmess_node['host']}
+                        if vmess_node.get('path'):
+                            ws_opts['path'] = vmess_node['path']
+                        if ws_opts:
+                            node['ws-opts'] = ws_opts
                     
                     nodes.append(node)
                 except:
@@ -307,12 +324,16 @@ def parse_base64_nodes(content):
                         'type': 'trojan',
                         'server': server,
                         'port': int(port),
-                        'password': password,
-                        'skip-cert-verify': True
+                        'password': password
                     }
                     nodes.append(node)
                 except:
                     continue
+                    
+            # Skip vless:// for now (often has REALITY issues)
+            elif line.startswith('vless://'):
+                continue
+                
     except:
         pass
     
@@ -345,11 +366,12 @@ def fetch_subscription(url):
         return []
         
     except Exception as e:
-        print(f"Error fetching {url}: {e}")
+        print(f"   ❌ Error fetching {url}: {e}")
         return []
 
 def main():
     print("🚀 Starting Clash Aggregator...")
+    print("=" * 50)
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
@@ -357,27 +379,43 @@ def main():
     
     print(f"📋 Found {len(urls)} subscription URLs")
     
+    # Statistics
+    stats = {
+        'total_fetched': 0,
+        'valid_nodes': 0,
+        'skipped_reality': 0,
+        'invalid_nodes': 0
+    }
+    
     # Collect all nodes
     all_nodes = []
     seen_servers = set()
     
     for idx, url in enumerate(urls, 1):
-        print(f"📥 Fetching subscription {idx}/{len(urls)}...")
+        print(f"\n📥 Fetching subscription {idx}/{len(urls)}...")
+        print(f"   URL: {url[:50]}...")
         nodes = fetch_subscription(url)
+        stats['total_fetched'] += len(nodes)
         
-        for node in nodes:
+        for node_idx, node in enumerate(nodes):
             # Validate and clean the node
-            cleaned_node = validate_and_clean_node(node)
+            cleaned_node = validate_and_clean_node(node, node_idx)
             if cleaned_node:
                 server = get_node_server(cleaned_node)
                 if server and server not in seen_servers:
                     seen_servers.add(server)
                     all_nodes.append(cleaned_node)
+                    stats['valid_nodes'] += 1
+            else:
+                stats['invalid_nodes'] += 1
     
-    print(f"📊 Collected {len(all_nodes)} valid unique nodes")
+    print(f"\n📊 Statistics:")
+    print(f"   Total nodes fetched: {stats['total_fetched']}")
+    print(f"   Valid nodes: {stats['valid_nodes']}")
+    print(f"   Invalid/skipped nodes: {stats['invalid_nodes']}")
     
     # Get geo-location for each node
-    print("🌍 Checking geo-locations...")
+    print(f"\n🌍 Checking geo-locations for {len(all_nodes)} nodes...")
     country_nodes = defaultdict(list)
     
     for idx, node in enumerate(all_nodes, 1):
@@ -394,7 +432,7 @@ def main():
     
     # Process Singapore nodes first
     if 'SG' in country_nodes:
-        print(f"🇸🇬 Processing {len(country_nodes['SG'])} Singapore nodes...")
+        print(f"\n🇸🇬 Processing {len(country_nodes['SG'])} Singapore nodes...")
         for idx, node in enumerate(country_nodes['SG'], 1):
             node['name'] = f"🇸🇬 SG-{idx:03d}"
             renamed_nodes.append(node)
@@ -421,11 +459,13 @@ def main():
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write("# Generated by Clash-Aggregator\n\n")
+        f.write("# Generated by Clash-Aggregator\n")
+        f.write("# Note: REALITY/VLESS nodes with flow are excluded for compatibility\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
+    print(f"\n" + "=" * 50)
     print(f"✅ Successfully generated clash.yaml")
-    print(f"📊 Total nodes: {len(renamed_nodes)}")
+    print(f"📊 Final output: {len(renamed_nodes)} nodes")
     print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
