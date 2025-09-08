@@ -552,7 +552,7 @@ def main():
     # Configuration
     ENABLE_HEALTH_CHECK = False
     DEBUG_MODE = False  # Set to True for detailed logging
-    EXCLUDE_UNKNOWN = True  # Set to True to exclude UN nodes
+    EXCLUDE_UNKNOWN = False  # Set to True to exclude UN nodes
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
