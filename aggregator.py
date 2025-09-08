@@ -12,7 +12,7 @@ import pytz
 from collections import defaultdict
 import urllib3
 
-# Disable SSL warnings for proxy testing
+# Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_flag_by_country_code(code):
@@ -36,23 +36,19 @@ def get_flag_by_country_code(code):
         'LK': '🇱🇰', 'MM': '🇲🇲', 'KH': '🇰🇭', 'LA': '🇱🇦', 'BN': '🇧🇳',
         'MO': '🇲🇴', 'PK': '🇵🇰', 'AF': '🇦🇫', 'JO': '🇯🇴', 'LB': '🇱🇧',
         'CW': '🇨🇼', 'PR': '🇵🇷', 'TT': '🇹🇹', 'BB': '🇧🇧', 'MT': '🇲🇹',
-        'CY': '🇨🇾', 'PA': '🇵🇦', 'CR': '🇨🇷', 'NI': '🇳🇮', 'HN': '🇭🇳',
-        'SV': '🇸🇻', 'GT': '🇬🇹', 'BZ': '🇧🇿', 'BO': '🇧🇴', 'PY': '🇵🇾',
-        'UY': '🇺🇾', 'GY': '🇬🇾', 'SR': '🇸🇷', 'JM': '🇯🇲', 'DO': '🇩🇴',
-        'GD': '🇬🇩', 'VC': '🇻🇨', 'KN': '🇰🇳', 'AG': '🇦🇬', 'DM': '🇩🇲',
-        'KY': '🇰🇾', 'TC': '🇹🇨', 'SX': '🇸🇽', 'AW': '🇦🇼', 'VG': '🇻🇬'
+        'CY': '🇨🇾', 'PA': '🇵🇦', 'CR': '🇨🇷', 'NI': '🇳🇮', 'HN': '🇭🇳'
     }
     return flags.get(code.upper(), '🌍')
 
-def test_proxy_and_location(node):
-    """Test proxy connectivity and get location - combined check"""
+def test_proxy_smart(node):
+    """Enhanced testing with better geo-detection"""
     server = get_node_server(node)
     port = node.get('port')
     
     if not server or not port:
         return None, False
     
-    # Step 1: Test TCP connectivity
+    # Test TCP connectivity
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(3)
@@ -70,62 +66,104 @@ def test_proxy_and_location(node):
         if result != 0:
             return None, False
         
-        # Step 2: Get location of the server IP
-        # Using multiple APIs for better accuracy
+        # Get location with enhanced detection
         country = None
         
-        # Try ip-api.com first (most reliable for actual location)
-        try:
-            response = requests.get(
-                f'http://ip-api.com/json/{ip}?fields=status,countryCode,proxy,hosting',
-                timeout=2
-            )
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('status') == 'success':
-                    country = data.get('countryCode', 'UN')
-                    # Note if it's detected as proxy/hosting
-                    if data.get('proxy') or data.get('hosting'):
-                        pass  # Still use the country but note it might be inaccurate
-        except:
-            pass
+        # Special handling for known patterns
+        server_lower = server.lower()
+        
+        # Domain-based hints (more reliable for CDN/relay services)
+        domain_hints = {
+            '.sg': 'SG', 'singapore': 'SG', 'sgp': 'SG',
+            '.jp': 'JP', 'japan': 'JP', 'tokyo': 'JP', 'osaka': 'JP',
+            '.kr': 'KR', 'korea': 'KR', 'seoul': 'KR',
+            '.hk': 'HK', 'hongkong': 'HK', 'hong-kong': 'HK',
+            '.tw': 'TW', 'taiwan': 'TW', 'taipei': 'TW',
+            '.us': 'US', 'america': 'US', 'united-states': 'US', 'usa': 'US',
+            '.uk': 'GB', 'united-kingdom': 'GB', 'london': 'GB', 'britain': 'GB',
+            '.de': 'DE', 'germany': 'DE', 'frankfurt': 'DE', 'berlin': 'DE',
+            '.fr': 'FR', 'france': 'FR', 'paris': 'FR',
+            '.nl': 'NL', 'netherlands': 'NL', 'amsterdam': 'NL',
+            '.ca': 'CA', 'canada': 'CA', 'toronto': 'CA',
+            '.au': 'AU', 'australia': 'AU', 'sydney': 'AU',
+            '.in': 'IN', 'india': 'IN', 'mumbai': 'IN',
+            '.my': 'MY', 'malaysia': 'MY', 'kuala': 'MY',
+            '.th': 'TH', 'thailand': 'TH', 'bangkok': 'TH',
+            '.vn': 'VN', 'vietnam': 'VN', 'hanoi': 'VN',
+            '.id': 'ID', 'indonesia': 'ID', 'jakarta': 'ID',
+            '.ph': 'PH', 'philippines': 'PH', 'manila': 'PH',
+            '.tr': 'TR', 'turkey': 'TR', 'istanbul': 'TR',
+            '.ae': 'AE', 'dubai': 'AE', 'emirates': 'AE',
+            '.br': 'BR', 'brazil': 'BR', 'sao-paulo': 'BR',
+            '.ru': 'RU', 'russia': 'RU', 'moscow': 'RU',
+            '.it': 'IT', 'italy': 'IT', 'milan': 'IT',
+            '.es': 'ES', 'spain': 'ES', 'madrid': 'ES',
+            '.se': 'SE', 'sweden': 'SE', 'stockholm': 'SE',
+            '.no': 'NO', 'norway': 'NO', 'oslo': 'NO',
+            '.fi': 'FI', 'finland': 'FI', 'helsinki': 'FI',
+            '.pl': 'PL', 'poland': 'PL', 'warsaw': 'PL',
+            '.ua': 'UA', 'ukraine': 'UA', 'kiev': 'UA',
+            '.za': 'ZA', 'south-africa': 'ZA', 'johannesburg': 'ZA'
+        }
+        
+        # Check domain hints first (more reliable for CDN)
+        for hint, cc in domain_hints.items():
+            if hint in server_lower:
+                country = cc
+                break
+        
+        # If no domain hint, use IP geolocation
+        if not country:
+            try:
+                # Try ip-api.com with more fields
+                response = requests.get(
+                    f'http://ip-api.com/json/{ip}?fields=status,countryCode,country,city,isp,org,as',
+                    timeout=2
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        country = data.get('countryCode', 'UN')
+                        
+                        # Double-check with city names if available
+                        city = data.get('city', '').lower()
+                        for hint, cc in domain_hints.items():
+                            if hint in city:
+                                country = cc
+                                break
+            except:
+                pass
         
         # Fallback to ipinfo.io
         if not country or country == 'UN':
             try:
-                response = requests.get(
-                    f'https://ipinfo.io/{ip}/json',
-                    timeout=2
-                )
+                response = requests.get(f'https://ipinfo.io/{ip}/json', timeout=2)
                 if response.status_code == 200:
                     data = response.json()
                     country = data.get('country', 'UN')
             except:
                 pass
         
-        # If still no country, mark as unknown but alive
         if not country:
             country = 'UN'
         
         return country.upper(), True
         
-    except Exception as e:
+    except:
         return None, False
 
-def batch_test_proxies_combined(nodes, max_workers=30):
-    """Test proxies in parallel - combines health check and location detection"""
-    print(f"\n🔬 Testing {len(nodes)} proxies (connectivity + location)...")
-    print("   This will take a few minutes...")
+def batch_test_proxies_smart(nodes, max_workers=30):
+    """Test proxies with smart detection"""
+    print(f"\n🔬 Testing {len(nodes)} proxies...")
     
     valid_nodes = []
     country_stats = defaultdict(int)
     dead_count = 0
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_node = {executor.submit(test_proxy_and_location, node): node for node in nodes}
+        future_to_node = {executor.submit(test_proxy_smart, node): node for node in nodes}
         
         completed = 0
-        
         for future in concurrent.futures.as_completed(future_to_node):
             completed += 1
             if completed % 50 == 0:
@@ -147,10 +185,59 @@ def batch_test_proxies_combined(nodes, max_workers=30):
     print(f"\n   ✅ Testing Complete:")
     print(f"      Working proxies: {len(valid_nodes)}")
     print(f"      Dead proxies: {dead_count}")
-    print(f"      Countries found: {len(country_stats)}")
     
     return valid_nodes, country_stats
 
+def create_proxy_groups(all_node_names, sg_node_names):
+    """Create proxy groups configuration"""
+    proxy_groups = [
+        {
+            'name': '🔥 ember',
+            'type': 'select',
+            'proxies': [
+                '🌏 ⚡',
+                '🇸🇬 ⚡',
+                '🌏 ⚖️',
+                '🇸🇬 ⚖️'
+            ]
+        },
+        {
+            'name': '🌏 ⚡',
+            'type': 'url-test',
+            'proxies': all_node_names,
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'tolerance': 50
+        },
+        {
+            'name': '🇸🇬 ⚡',
+            'type': 'url-test',
+            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'tolerance': 50
+        },
+        {
+            'name': '🌏 ⚖️',
+            'type': 'load-balance',
+            'proxies': all_node_names,
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'strategy': 'round-robin'
+        },
+        {
+            'name': '🇸🇬 ⚖️',
+            'type': 'load-balance',
+            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'strategy': 'round-robin'
+        }
+    ]
+    
+    return proxy_groups
+
+# [Keep all parsing functions - parse_v2ray_json, convert_v2ray_to_clash, etc.]
 def parse_v2ray_json(content):
     """Parse V2Ray JSON format"""
     nodes = []
@@ -481,13 +568,13 @@ def fetch_subscription(url):
         return []
 
 def main():
-    print("🚀 Starting Clash Aggregator with Combined Testing...")
+    print("🚀 Starting Clash Aggregator with Proxy Groups...")
     print("=" * 50)
     
     # Configuration
-    ENABLE_TESTING = True       # Combined health + location check
-    EXCLUDE_UNKNOWN = True      # Exclude nodes with unknown location
-    MAX_WORKERS = 30           # Parallel testing threads
+    ENABLE_TESTING = True
+    EXCLUDE_UNKNOWN = True
+    MAX_WORKERS = 30
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
@@ -514,9 +601,9 @@ def main():
     
     print(f"\n📊 Collected {len(all_nodes)} unique nodes")
     
-    # Test proxies (health + location combined)
+    # Test proxies
     if ENABLE_TESTING and all_nodes:
-        valid_nodes, country_stats = batch_test_proxies_combined(all_nodes, max_workers=MAX_WORKERS)
+        valid_nodes, country_stats = batch_test_proxies_smart(all_nodes, max_workers=MAX_WORKERS)
         
         if not valid_nodes:
             print("\n⚠️ No working proxies found!")
@@ -524,7 +611,7 @@ def main():
         
         # Show country distribution
         print(f"\n📊 Country Distribution:")
-        for country, count in sorted(country_stats.items(), key=lambda x: x[1], reverse=True)[:15]:
+        for country, count in sorted(country_stats.items(), key=lambda x: x[1], reverse=True)[:10]:
             flag = get_flag_by_country_code(country)
             print(f"   {flag} {country}: {count} nodes")
         
@@ -535,21 +622,25 @@ def main():
             if not (EXCLUDE_UNKNOWN and country == 'UN'):
                 country_nodes[country].append(node)
     else:
-        # No testing, use all nodes
         country_nodes = defaultdict(list)
         for node in all_nodes:
             country_nodes['UN'].append(node)
     
     # Rename nodes
     renamed_nodes = []
+    sg_node_names = []
+    all_node_names = []
     
     # Process Singapore nodes first
     if 'SG' in country_nodes:
         print(f"\n🇸🇬 Processing {len(country_nodes['SG'])} Singapore nodes...")
         for idx, node in enumerate(country_nodes['SG'], 1):
-            node['name'] = f"🇸🇬 SG-{idx:03d}"
+            node_name = f"🇸🇬 SG-{idx:03d}"
+            node['name'] = node_name
             node.pop('detected_country', None)
             renamed_nodes.append(node)
+            sg_node_names.append(node_name)
+            all_node_names.append(node_name)
         del country_nodes['SG']
     
     # Process other countries
@@ -558,13 +649,19 @@ def main():
         flag = get_flag_by_country_code(country_code)
         
         for idx, node in enumerate(nodes, 1):
-            node['name'] = f"{flag} {country_code}-{idx:03d}"
+            node_name = f"{flag} {country_code}-{idx:03d}"
+            node['name'] = node_name
             node.pop('detected_country', None)
             renamed_nodes.append(node)
+            all_node_names.append(node_name)
     
-    # Create output
+    # Create proxy groups
+    proxy_groups = create_proxy_groups(all_node_names, sg_node_names)
+    
+    # Create output with proxy groups
     output = {
-        'proxies': renamed_nodes
+        'proxies': renamed_nodes,
+        'proxy-groups': proxy_groups
     }
     
     # Add update time
@@ -575,14 +672,16 @@ def main():
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write(f"# Testing: {'Combined Health+Location' if ENABLE_TESTING else 'Disabled'}\n")
-        f.write(f"# All proxies are verified working\n")
+        f.write(f"# Singapore Nodes: {len(sg_node_names)}\n")
+        f.write(f"# Proxy Groups: 5 (ember, url-test x2, load-balance x2)\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
     print(f"\n" + "=" * 50)
     print(f"✅ Successfully generated clash.yaml")
-    print(f"📊 Final output: {len(renamed_nodes)} working proxies")
+    print(f"📊 Total: {len(renamed_nodes)} proxies")
+    print(f"🇸🇬 Singapore: {len(sg_node_names)} nodes")
+    print(f"📁 Proxy Groups: 5 groups configured")
     print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
