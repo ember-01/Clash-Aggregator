@@ -12,7 +12,7 @@ import pytz
 from collections import defaultdict
 
 def get_flag_by_country_code(code):
-    """Get flag emoji by country code"""
+    """Get flag emoji by country code - EXPANDED LIST"""
     flags = {
         'SG': '🇸🇬', 'US': '🇺🇸', 'JP': '🇯🇵', 'KR': '🇰🇷', 'HK': '🇭🇰',
         'TW': '🇹🇼', 'CN': '🇨🇳', 'GB': '🇬🇧', 'DE': '🇩🇪', 'FR': '🇫🇷',
@@ -42,9 +42,131 @@ def get_flag_by_country_code(code):
         'SV': '🇸🇻', 'GT': '🇬🇹', 'BZ': '🇧🇿', 'BO': '🇧🇴', 'PY': '🇵🇾',
         'UY': '🇺🇾', 'GY': '🇬🇾', 'SR': '🇸🇷', 'GF': '🇬🇫', 'JM': '🇯🇲',
         'TT': '🇹🇹', 'BB': '🇧🇧', 'BS': '🇧🇸', 'BM': '🇧🇲', 'DO': '🇩🇴',
-        'PR': '🇵🇷', 'VI': '🇻🇮', 'CU': '🇨🇺', 'HT': '🇭🇹', 'GP': '🇬🇵'
+        'PR': '🇵🇷', 'VI': '🇻🇮', 'CU': '🇨🇺', 'HT': '🇭🇹', 'GP': '🇬🇵',
+        'CW': '🇨🇼', 'AW': '🇦🇼', 'SX': '🇸🇽', 'KY': '🇰🇾', 'TC': '🇹🇨',
+        'VG': '🇻🇬', 'VC': '🇻🇨', 'AG': '🇦🇬', 'LC': '🇱🇨', 'DM': '🇩🇲',
+        'GD': '🇬🇩', 'MQ': '🇲🇶', 'MS': '🇲🇸', 'AI': '🇦🇮', 'BL': '🇧🇱',
+        'MF': '🇲🇫', 'PM': '🇵🇲', 'AS': '🇦🇸', 'GU': '🇬🇺', 'MP': '🇲🇵',
+        'UM': '🇺🇲', 'VI': '🇻🇮', 'WS': '🇼🇸', 'PW': '🇵🇼', 'MH': '🇲🇭',
+        'FM': '🇫🇲', 'PF': '🇵🇫', 'NC': '🇳🇨', 'WF': '🇼🇫', 'CK': '🇨🇰',
+        'NU': '🇳🇺', 'TO': '🇹🇴', 'TV': '🇹🇻', 'NR': '🇳🇷', 'KI': '🇰🇮',
+        'FJ': '🇫🇯', 'PG': '🇵🇬', 'SB': '🇸🇧', 'VU': '🇻🇺', 'TL': '🇹🇱',
+        'BT': '🇧🇹', 'MV': '🇲🇻', 'BN': '🇧🇳', 'NP': '🇳🇵', 'LA': '🇱🇦'
     }
     return flags.get(code.upper(), '🌍')
+
+def get_server_location_enhanced(server_ip, debug=False):
+    """Enhanced geo-location with fallback methods"""
+    if not server_ip:
+        return 'UN'
+    
+    # Skip private/local IPs
+    private_patterns = [
+        r'^10\.',
+        r'^172\.(1[6-9]|2[0-9]|3[01])\.',
+        r'^192\.168\.',
+        r'^127\.',
+        r'^localhost$',
+        r'^::1$',
+        r'^fc00:',
+        r'^fe80:'
+    ]
+    
+    for pattern in private_patterns:
+        if re.match(pattern, server_ip):
+            if debug:
+                print(f"   ⚠️ Private IP detected: {server_ip}")
+            return 'UN'
+    
+    # Try to resolve domain to IP
+    ip = server_ip
+    if not re.match(r'^\d+\.\d+\.\d+\.\d+$', server_ip):
+        try:
+            ip = socket.gethostbyname(server_ip)
+            if debug:
+                print(f"   📡 Resolved {server_ip} to {ip}")
+        except Exception as e:
+            if debug:
+                print(f"   ⚠️ Cannot resolve {server_ip}: {e}")
+            
+            # Try to guess from domain TLD
+            domain_hints = {
+                '.sg': 'SG', '.jp': 'JP', '.kr': 'KR', '.tw': 'TW',
+                '.hk': 'HK', '.cn': 'CN', '.uk': 'GB', '.de': 'DE',
+                '.fr': 'FR', '.nl': 'NL', '.ca': 'CA', '.au': 'AU',
+                '.in': 'IN', '.th': 'TH', '.my': 'MY', '.id': 'ID',
+                '.ru': 'RU', '.br': 'BR', '.mx': 'MX', '.ir': 'IR',
+                '.tr': 'TR', '.ae': 'AE', '.sa': 'SA', '.eg': 'EG'
+            }
+            
+            server_lower = server_ip.lower()
+            for tld, country in domain_hints.items():
+                if tld in server_lower:
+                    if debug:
+                        print(f"   💡 Guessed {country} from domain TLD")
+                    return country
+            
+            return 'UN'
+    
+    # Check for private IP after resolution
+    for pattern in private_patterns:
+        if re.match(pattern, ip):
+            if debug:
+                print(f"   ⚠️ Resolved to private IP: {ip}")
+            return 'UN'
+    
+    # Try ipinfo.io first
+    try:
+        response = requests.get(
+            f'https://ipinfo.io/{ip}/json',
+            timeout=3
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if 'bogon' in data and data['bogon']:
+                if debug:
+                    print(f"   ⚠️ Bogon IP detected: {ip}")
+                return 'UN'
+            
+            country_code = data.get('country')
+            if country_code and country_code != 'None':
+                # Check for CDN/hosting providers
+                org = data.get('org', '').lower()
+                cdn_providers = ['cloudflare', 'akamai', 'fastly', 'cloudfront']
+                is_cdn = any(provider in org for provider in cdn_providers)
+                
+                if debug and is_cdn:
+                    print(f"   📡 {ip} is CDN ({org}) - reported as {country_code}")
+                
+                return country_code.upper()
+    except Exception as e:
+        if debug:
+            print(f"   ❌ ipinfo.io error for {ip}: {e}")
+    
+    # Fallback: Try ip-api.com
+    try:
+        response = requests.get(
+            f'http://ip-api.com/json/{ip}',
+            timeout=3
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                country_code = data.get('countryCode')
+                if country_code:
+                    if debug:
+                        print(f"   📡 Fallback to ip-api.com: {country_code}")
+                    return country_code.upper()
+    except:
+        pass
+    
+    if debug:
+        print(f"   ❌ Could not determine location for {server_ip}")
+    
+    return 'UN'
 
 def check_node_health(node):
     """Check if a node is reachable"""
@@ -93,60 +215,6 @@ def batch_health_check(nodes, max_workers=50):
     
     print(f"   ✅ {len(healthy_nodes)} healthy nodes found")
     return healthy_nodes
-
-def get_server_location(server_ip, debug=False):
-    """Get country code using ipinfo.io with debug info"""
-    if not server_ip:
-        return 'UN'
-    
-    # Resolve domain to IP if needed
-    try:
-        socket.inet_aton(server_ip)
-        ip = server_ip
-    except socket.error:
-        try:
-            ip = socket.gethostbyname(server_ip)
-        except Exception as e:
-            if debug:
-                print(f"   ⚠️ Cannot resolve {server_ip}: {e}")
-            return 'UN'
-    
-    try:
-        response = requests.get(
-            f'https://ipinfo.io/{ip}/json',
-            timeout=5
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            
-            # Debug: Check for bogus/proxy data
-            if debug and 'bogon' in data and data['bogon']:
-                print(f"   ⚠️ Bogon IP detected: {ip}")
-                return 'UN'
-            
-            country_code = data.get('country', 'UN')
-            
-            # Debug: Print unexpected country codes
-            if debug and country_code and len(country_code) != 2:
-                print(f"   ⚠️ Unusual country code for {ip}: {country_code}")
-            
-            # Debug: Check if this is a known VPN/hosting provider
-            if debug:
-                org = data.get('org', '').lower()
-                if any(provider in org for provider in ['cloudflare', 'amazon', 'google', 'microsoft', 'digitalocean', 'linode']):
-                    print(f"   📡 {ip} is from {org} (reported as {country_code})")
-            
-            return country_code.upper()
-        else:
-            if debug:
-                print(f"   ❌ ipinfo.io returned {response.status_code} for {ip}")
-            return 'UN'
-        
-    except Exception as e:
-        if debug:
-            print(f"   ❌ Error checking {server_ip}: {e}")
-        return 'UN'
 
 def parse_v2ray_json(content):
     """Parse V2Ray JSON format"""
@@ -478,19 +546,19 @@ def fetch_subscription(url):
         return []
 
 def main():
-    print("🚀 Starting Clash Aggregator with Debug Mode...")
+    print("🚀 Starting Clash Aggregator...")
     print("=" * 50)
     
     # Configuration
-    ENABLE_HEALTH_CHECK = False  # Disabled for faster debugging
-    DEBUG_MODE = True  # Enable detailed logging
+    ENABLE_HEALTH_CHECK = False
+    DEBUG_MODE = False  # Set to True for detailed logging
+    EXCLUDE_UNKNOWN = True  # Set to True to exclude UN nodes
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
     
     print(f"📋 Found {len(urls)} subscription URLs")
-    print(f"🔍 Debug Mode: ON - Will show geo-location details")
     
     # Collect all nodes
     all_nodes = []
@@ -517,29 +585,10 @@ def main():
             print("⚠️ No healthy nodes found! Exiting...")
             return
     
-    # Sample check - verify first few nodes in detail
+    # Get geo-location
     print(f"\n🌍 Checking geo-locations...")
-    
-    if DEBUG_MODE and all_nodes:
-        sample_size = min(5, len(all_nodes))
-        print(f"\n🔬 Sampling first {sample_size} nodes for detailed check:")
-        
-        for idx, node in enumerate(all_nodes[:sample_size], 1):
-            server = get_node_server(node)
-            original_name = node.get('name', 'Unknown')
-            print(f"\n   Node {idx}: {original_name[:50]}...")
-            print(f"   Server: {server}")
-            
-            if server:
-                country_code = get_server_location(server, debug=True)
-                flag = get_flag_by_country_code(country_code)
-                print(f"   Detected: {flag} {country_code}")
-    
-    # Process all nodes
     country_nodes = defaultdict(list)
-    country_stats = defaultdict(int)
-    
-    print(f"\n📍 Processing all {len(all_nodes)} nodes...")
+    unknown_servers = []
     
     for idx, node in enumerate(all_nodes, 1):
         if idx % 10 == 0:
@@ -547,23 +596,24 @@ def main():
         
         server = get_node_server(node)
         if server:
-            country_code = get_server_location(server, debug=False)
-            country_nodes[country_code].append(node)
-            country_stats[country_code] += 1
+            country_code = get_server_location_enhanced(server, debug=DEBUG_MODE)
+            
+            if country_code == 'UN':
+                unknown_servers.append(server)
+            
+            if not (EXCLUDE_UNKNOWN and country_code == 'UN'):
+                country_nodes[country_code].append(node)
         
         if idx % 5 == 0:
             time.sleep(0.1)
     
-    # Show country distribution
-    if DEBUG_MODE:
-        print(f"\n📊 Country Distribution:")
-        for country_code, count in sorted(country_stats.items(), key=lambda x: x[1], reverse=True)[:10]:
-            flag = get_flag_by_country_code(country_code)
-            print(f"   {flag} {country_code}: {count} nodes")
-        
-        missing_flags = [cc for cc in country_stats.keys() if get_flag_by_country_code(cc) == '🌍']
-        if missing_flags:
-            print(f"\n⚠️ Missing flag mappings for: {', '.join(missing_flags)}")
+    # Show statistics
+    print(f"\n📊 Geo-location results:")
+    print(f"   Successfully located: {sum(len(nodes) for cc, nodes in country_nodes.items() if cc != 'UN')} nodes")
+    print(f"   Unknown location: {len(unknown_servers)} nodes")
+    
+    if EXCLUDE_UNKNOWN:
+        print(f"   ⚠️ Excluding {len(unknown_servers)} unknown nodes")
     
     # Rename nodes
     renamed_nodes = []
@@ -577,10 +627,9 @@ def main():
         del country_nodes['SG']
     
     # Process other countries
-    for country_code, nodes in country_nodes.items():
+    for country_code, nodes in sorted(country_nodes.items()):
         flag = get_flag_by_country_code(country_code)
-        if DEBUG_MODE and flag == '🌍':
-            print(f"⚠️ Unknown country code: {country_code} ({len(nodes)} nodes)")
+        print(f"{flag} Processing {len(nodes)} {country_code} nodes...")
         
         for idx, node in enumerate(nodes, 1):
             node['name'] = f"{flag} {country_code}-{idx:03d}"
@@ -599,19 +648,15 @@ def main():
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write(f"# Debug Mode: {DEBUG_MODE}\n")
+        f.write(f"# Health Check: {'Enabled' if ENABLE_HEALTH_CHECK else 'Disabled'}\n")
+        f.write(f"# Unknown Excluded: {'Yes' if EXCLUDE_UNKNOWN else 'No'}\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
     print(f"\n" + "=" * 50)
     print(f"✅ Successfully generated clash.yaml")
     print(f"📊 Final output: {len(renamed_nodes)} nodes")
-    
-    # Final check
-    if DEBUG_MODE and renamed_nodes:
-        print(f"\n🔍 Sample of final renamed nodes:")
-        for node in renamed_nodes[:5]:
-            print(f"   {node['name']} -> {node['server']}")
+    print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
     main()
