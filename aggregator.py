@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Clash Aggregator with Clash Core for accurate testing
+Clash Aggregator with Clash Core Testing
 Gets real exit location + health check in one go
 """
 
@@ -28,43 +28,41 @@ def download_clash_core():
     
     print("📥 Downloading Clash core...")
     
-    # Detect architecture
-    import platform
-    machine = platform.machine().lower()
+    # Updated URL for Clash Meta (mihomo)
+    urls = [
+        "https://github.com/MetaCubeX/mihomo/releases/download/v1.18.0/mihomo-linux-amd64-v1.18.0.gz",
+        "https://github.com/Dreamacro/clash/releases/download/v1.18.0/clash-linux-amd64-v1.18.0.gz"
+    ]
     
-    if 'x86_64' in machine or 'amd64' in machine:
-        arch = 'amd64'
-    elif 'aarch64' in machine or 'arm64' in machine:
-        arch = 'arm64'
-    else:
-        arch = 'amd64'  # Default
+    for url in urls:
+        try:
+            print(f"   Trying: {url.split('/')[4]}...")
+            response = requests.get(url, stream=True, timeout=30)
+            
+            if response.status_code == 200:
+                # Save as gzip
+                with open('clash.gz', 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                
+                # Extract
+                import gzip
+                with gzip.open('clash.gz', 'rb') as f_in:
+                    with open('clash', 'wb') as f_out:
+                        f_out.write(f_in.read())
+                
+                # Make executable
+                os.chmod('clash', 0o755)
+                os.remove('clash.gz')
+                
+                print("✅ Clash core downloaded")
+                return True
+        except Exception as e:
+            print(f"   ❌ Failed: {e}")
+            continue
     
-    # Download URL for Clash Premium (supports more features)
-    url = f"https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-{arch}-2023.08.17.gz"
-    
-    try:
-        # Download
-        response = requests.get(url, stream=True)
-        with open('clash.gz', 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        
-        # Extract
-        import gzip
-        with gzip.open('clash.gz', 'rb') as f_in:
-            with open('clash', 'wb') as f_out:
-                f_out.write(f_in.read())
-        
-        # Make executable
-        os.chmod('clash', 0o755)
-        os.remove('clash.gz')
-        
-        print("✅ Clash core downloaded")
-        return True
-        
-    except Exception as e:
-        print(f"❌ Failed to download Clash core: {e}")
-        return False
+    print("❌ All download attempts failed")
+    return False
 
 class ClashTester:
     """Test proxies using Clash core for real exit location"""
@@ -283,7 +281,7 @@ class ClashTester:
         return result
 
 def fetch_subscriptions_smart(urls):
-    """Fetch subscriptions with multiple methods"""
+    """Fetch subscriptions with multiple methods - FIXED"""
     all_nodes = []
     
     for idx, url in enumerate(urls, 1):
@@ -311,8 +309,8 @@ def fetch_subscriptions_smart(urls):
                 if data and 'proxies' in data:
                     nodes = data['proxies']
                     print(f"   ✅ Got {len(nodes)} nodes via subconverter")
-        except:
-            pass
+        except Exception as e:
+            print(f"   ⚠️ Subconverter failed: {e}")
         
         # Fallback to direct fetch
         if not nodes:
@@ -337,12 +335,19 @@ def fetch_subscriptions_smart(urls):
                         if isinstance(data, dict) and 'proxies' in data:
                             nodes = data['proxies']
                             print(f"   ✅ Got {len(nodes)} nodes (base64)")
+                        elif isinstance(data, list):
+                            nodes = data
+                            print(f"   ✅ Got {len(nodes)} nodes (base64)")
                     except:
-                        pass
+                        print(f"   ❌ Failed to parse content")
             except Exception as e:
-                print(f"   ❌ Failed: {e}")
+                print(f"   ❌ Failed to fetch: {e}")
         
-        all_nodes.extend(nodes)
+        # Always extend with a list (never None)
+        if nodes and isinstance(nodes, list):
+            all_nodes.extend(nodes)
+        else:
+            print(f"   ⚠️ No valid nodes found")
     
     return all_nodes
 
@@ -410,7 +415,11 @@ def get_flag_emoji(code):
         'TW': '🇹🇼', 'CN': '🇨🇳', 'GB': '🇬🇧', 'DE': '🇩🇪', 'FR': '🇫🇷',
         'NL': '🇳🇱', 'CA': '🇨🇦', 'AU': '🇦🇺', 'IN': '🇮🇳', 'TH': '🇹🇭',
         'MY': '🇲🇾', 'ID': '🇮🇩', 'PH': '🇵🇭', 'VN': '🇻🇳', 'TR': '🇹🇷',
-        'AE': '🇦🇪', 'RU': '🇷🇺', 'BR': '🇧🇷', 'AR': '🇦🇷', 'MX': '🇲🇽'
+        'AE': '🇦🇪', 'RU': '🇷🇺', 'BR': '🇧🇷', 'AR': '🇦🇷', 'MX': '🇲🇽',
+        'IT': '🇮🇹', 'ES': '🇪🇸', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮',
+        'DK': '🇩🇰', 'PL': '🇵🇱', 'UA': '🇺🇦', 'RO': '🇷🇴', 'CZ': '🇨🇿',
+        'IR': '🇮🇷', 'NG': '🇳🇬', 'ZA': '🇿🇦', 'EG': '🇪🇬', 'KE': '🇰🇪',
+        'IL': '🇮🇱', 'SA': '🇸🇦', 'CL': '🇨🇱', 'CO': '🇨🇴', 'PE': '🇵🇪'
     }
     return flags.get(code.upper(), '🌍')
 
@@ -423,9 +432,10 @@ def main():
     MAX_TEST_NODES = 500   # Limit testing for speed (set to None for all)
     
     # Download Clash core if needed
-    if ENABLE_TESTING and not download_clash_core():
-        print("⚠️ Continuing without testing...")
-        ENABLE_TESTING = False
+    if ENABLE_TESTING:
+        if not download_clash_core():
+            print("⚠️ Continuing without testing...")
+            ENABLE_TESTING = False
     
     # Read subscriptions
     try:
@@ -438,13 +448,18 @@ def main():
     
     # Fetch all nodes
     all_nodes = fetch_subscriptions_smart(urls)
+    
+    if not all_nodes:
+        print("❌ No nodes fetched from any subscription")
+        return
+    
     print(f"\n📊 Total fetched: {len(all_nodes)} nodes")
     
     # Deduplicate
     all_nodes = deduplicate_nodes(all_nodes)
     print(f"📊 After deduplication: {len(all_nodes)} unique nodes")
     
-    # Test with Clash core
+    # Test with Clash core if enabled
     if ENABLE_TESTING and all_nodes:
         # Limit nodes for testing if configured
         test_nodes = all_nodes[:MAX_TEST_NODES] if MAX_TEST_NODES else all_nodes
@@ -464,39 +479,39 @@ def main():
             print(f"📝 Adding {len(untested)} untested nodes")
             alive_nodes.extend(untested)
     else:
+        # No testing, use all nodes
         alive_nodes = all_nodes
+        print("⚠️ Skipping proxy testing - geo-location may be inaccurate")
     
     if not alive_nodes:
         print("❌ No alive nodes found")
         return
     
-    # Group by country (using test results)
+    # Group by country
     country_nodes = defaultdict(list)
     
     for node in alive_nodes:
-        if 'test_result' in node:
+        if ENABLE_TESTING and 'test_result' in node:
             country = node['test_result'].get('country', 'UN')
         else:
-            country = 'UN'
+            # Fallback: guess from server name/domain
+            server = node.get('server', '').lower()
+            if any(sg in server for sg in ['.sg', 'singapore', 'sgp']):
+                country = 'SG'
+            else:
+                country = 'UN'
         
         country_nodes[country].append(node)
     
     # Show distribution
-    print(f"\n📊 Country Distribution (Real Exit Points):")
+    print(f"\n📊 Country Distribution:")
     for country, nodes in sorted(country_nodes.items(), key=lambda x: len(x[1]), reverse=True)[:10]:
         flag = get_flag_emoji(country)
         print(f"   {flag} {country}: {len(nodes)} nodes")
     
     # Process nodes
     sg_nodes = country_nodes.get('SG', [])
-    print(f"\n🇸🇬 Singapore Nodes (Real): {len(sg_nodes)}")
-    
-    # Show sample SG nodes with details
-    if sg_nodes and len(sg_nodes) <= 20:
-        print("   Details:")
-        for node in sg_nodes[:5]:
-            result = node.get('test_result', {})
-            print(f"   - {node.get('server')}: {result.get('city')} ({result.get('latency')}ms)")
+    print(f"\n🇸🇬 Singapore Nodes: {len(sg_nodes)}")
     
     # Rename nodes
     renamed_nodes = []
@@ -525,6 +540,10 @@ def main():
             renamed_nodes.append(node)
             all_node_names.append(node_name)
     
+    if not all_node_names:
+        print("❌ No nodes to output")
+        return
+    
     # Create output
     output = {
         'proxies': renamed_nodes,
@@ -542,16 +561,19 @@ def main():
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write(f"# Singapore Nodes: {len(sg_node_names)} (Real Exit Points)\n")
-        f.write("# Testing: Clash Core (Real Exit Location + Health)\n")
+        f.write(f"# Singapore Nodes: {len(sg_node_names)}\n")
+        if ENABLE_TESTING:
+            f.write("# Testing: Clash Core (Real Exit Location)\n")
+        else:
+            f.write("# Testing: Disabled (Domain-based guessing)\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False)
     
     print(f"\n" + "=" * 50)
     print(f"✅ Successfully generated clash.yaml")
     print(f"📊 Summary:")
-    print(f"   Total alive proxies: {len(renamed_nodes)}")
-    print(f"   Singapore nodes: {len(sg_node_names)} (verified)")
+    print(f"   Total proxies: {len(renamed_nodes)}")
+    print(f"   Singapore nodes: {len(sg_node_names)}")
     print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
