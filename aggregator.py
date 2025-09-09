@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Clash Aggregator using Subconverter + MaxMind GeoLite2
-Accurate parsing and geo-location detection
+Process subscriptions in batches to avoid URL length limits
 """
 
 import yaml
@@ -16,6 +16,7 @@ import pytz
 from collections import defaultdict
 from urllib.parse import quote
 import time
+import base64
 
 def download_maxmind_db():
     """Download and extract MaxMind GeoLite2 database"""
@@ -27,7 +28,6 @@ def download_maxmind_db():
     print("📥 Downloading MaxMind GeoLite2 database...")
     
     try:
-        # Download the database
         url = f"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key={license_key}&suffix=tar.gz"
         response = requests.get(url, timeout=30)
         
@@ -35,15 +35,12 @@ def download_maxmind_db():
             print(f"❌ Failed to download: HTTP {response.status_code}")
             return False
         
-        # Save tar.gz file
         with open("GeoLite2-City.tar.gz", "wb") as f:
             f.write(response.content)
         
-        # Extract the .mmdb file
         with tarfile.open("GeoLite2-City.tar.gz", "r:gz") as tar:
             for member in tar.getmembers():
                 if member.name.endswith("GeoLite2-City.mmdb"):
-                    # Extract to current directory with simple name
                     member.name = "GeoLite2-City.mmdb"
                     tar.extract(member)
                     print("✅ MaxMind database downloaded and extracted")
@@ -60,7 +57,6 @@ class GeoDetector:
     """Accurate geo-detection using MaxMind GeoLite2"""
     
     def __init__(self, db_path='GeoLite2-City.mmdb'):
-        """Initialize with MaxMind database"""
         self.reader = geoip2.database.Reader(db_path)
         self.cache = {}
         self.stats = {
@@ -73,28 +69,22 @@ class GeoDetector:
         """Get country code for server/IP"""
         self.stats['queries'] += 1
         
-        # Check cache
         if server in self.cache:
             self.stats['cache_hits'] += 1
             return self.cache[server]
         
-        # Resolve to IP if needed
         try:
             if self._is_ip(server):
                 ip = server
             else:
-                # Try to resolve domain
                 ip = socket.gethostbyname(server)
         except:
             self.cache[server] = 'UN'
             return 'UN'
         
-        # Query MaxMind
         try:
             response = self.reader.city(ip)
             country_code = response.country.iso_code or 'UN'
-            
-            # Cache result
             self.cache[server] = country_code
             
             if country_code == 'SG':
@@ -103,40 +93,11 @@ class GeoDetector:
             return country_code
             
         except geoip2.errors.AddressNotFoundError:
-            # Private IP or not in database
             self.cache[server] = 'UN'
             return 'UN'
         except Exception:
             self.cache[server] = 'UN'
             return 'UN'
-    
-    def get_detailed_info(self, server):
-        """Get detailed location information"""
-        try:
-            # Resolve to IP
-            if self._is_ip(server):
-                ip = server
-            else:
-                ip = socket.gethostbyname(server)
-            
-            response = self.reader.city(ip)
-            
-            return {
-                'ip': ip,
-                'country_code': response.country.iso_code,
-                'country_name': response.country.name,
-                'city': response.city.name if response.city.name else 'Unknown',
-                'subdivision': response.subdivisions.most_specific.name if response.subdivisions else None,
-                'postal_code': response.postal.code if hasattr(response, 'postal') else None,
-                'latitude': response.location.latitude,
-                'longitude': response.location.longitude,
-                'accuracy_radius': response.location.accuracy_radius,
-                'time_zone': response.location.time_zone,
-                'is_anonymous_proxy': response.traits.is_anonymous_proxy if hasattr(response.traits, 'is_anonymous_proxy') else False,
-                'is_hosting_provider': response.traits.is_hosting_provider if hasattr(response.traits, 'is_hosting_provider') else False,
-            }
-        except:
-            return None
     
     def _is_ip(self, string):
         """Check if string is an IP address"""
@@ -157,52 +118,125 @@ class GeoDetector:
         """Close database reader"""
         self.reader.close()
 
-def fetch_via_subconverter(urls):
-    """Use subconverter for reliable parsing of all formats"""
-    print(f"\n🔄 Using subconverter to parse {len(urls)} subscriptions...")
+def fetch_single_subscription(url, use_subconverter=True):
+    """Fetch a single subscription with fallback"""
+    nodes = []
     
-    # Combine all URLs
-    combined = '|'.join(urls)
+    if use_subconverter:
+        # Try subconverter first
+        endpoints = [
+            'https://sub.xeton.dev/sub',
+            'https://api.dler.io/sub'
+        ]
+        
+        for endpoint in endpoints:
+            try:
+                params = {
+                    'target': 'clash',
+                    'url': url,
+                    'insert': 'false',
+                    'emoji': 'false',
+                    'list': 'true',
+                    'udp': 'true'
+                }
+                
+                response = requests.get(endpoint, params=params, timeout=15)
+                
+                if response.status_code == 200:
+                    data = yaml.safe_load(response.text)
+                    if data and 'proxies' in data:
+                        return data['proxies']
+            except:
+                continue
     
-    # Subconverter endpoints (with fallbacks)
-    endpoints = [
-        'https://sub.xeton.dev/sub',
-        'https://api.dler.io/sub',
-        'https://sub.id9.cc/sub'
-    ]
-    
-    for endpoint in endpoints:
-        print(f"   Trying {endpoint}...")
+    # Fallback: Try direct parsing
+    try:
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'clash-verge/1.0'})
+        content = response.text.strip()
+        
+        # Try as YAML
         try:
-            params = {
-                'target': 'clash',
-                'url': quote(combined),
-                'insert': 'false',  # Don't insert default rules
-                'config': '',
-                'emoji': 'false',    # We'll add our own emojis
-                'list': 'true',      # Only return proxies
-                'udp': 'true',
-                'scv': 'false',
-                'fdn': 'false',
-                'expand': 'true',
-                'classic': 'false'
-            }
-            
-            response = requests.get(endpoint, params=params, timeout=60)
-            
-            if response.status_code == 200:
-                data = yaml.safe_load(response.text)
-                if data and 'proxies' in data:
-                    proxies = data['proxies']
-                    print(f"   ✅ Success! Got {len(proxies)} nodes")
-                    return proxies
-                    
-        except Exception as e:
-            print(f"   ❌ Failed: {e}")
-            continue
+            data = yaml.safe_load(content)
+            if isinstance(data, dict) and 'proxies' in data:
+                return data['proxies']
+            elif isinstance(data, list):
+                return data
+        except:
+            pass
+        
+        # Try base64 decode
+        try:
+            decoded = base64.b64decode(content).decode('utf-8')
+            data = yaml.safe_load(decoded)
+            if isinstance(data, dict) and 'proxies' in data:
+                return data['proxies']
+            elif isinstance(data, list):
+                return data
+        except:
+            pass
+        
+    except:
+        pass
     
-    print("   ❌ All subconverter endpoints failed")
-    return []
+    return nodes
+
+def fetch_subscriptions_batch(urls, batch_size=3):
+    """Fetch subscriptions in batches"""
+    all_nodes = []
+    total_urls = len(urls)
+    
+    print(f"\n🔄 Processing {total_urls} subscriptions...")
+    
+    for i in range(0, total_urls, batch_size):
+        batch = urls[i:i+batch_size]
+        batch_num = (i // batch_size) + 1
+        total_batches = (total_urls + batch_size - 1) // batch_size
+        
+        print(f"\n📦 Batch {batch_num}/{total_batches} ({len(batch)} URLs):")
+        
+        # Try batch processing with subconverter
+        if len(batch) > 1:
+            combined = '|'.join(batch)
+            
+            try:
+                params = {
+                    'target': 'clash',
+                    'url': quote(combined),
+                    'insert': 'false',
+                    'emoji': 'false',
+                    'list': 'true',
+                    'udp': 'true'
+                }
+                
+                response = requests.get(
+                    'https://sub.xeton.dev/sub',
+                    params=params,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    data = yaml.safe_load(response.text)
+                    if data and 'proxies' in data:
+                        nodes = data['proxies']
+                        all_nodes.extend(nodes)
+                        print(f"   ✅ Batch success: {len(nodes)} nodes")
+                        continue
+            except Exception as e:
+                print(f"   ⚠️ Batch failed, trying individually...")
+        
+        # Process individually if batch fails
+        for idx, url in enumerate(batch, 1):
+            print(f"   Processing {idx}/{len(batch)}: {url[:50]}...")
+            nodes = fetch_single_subscription(url)
+            if nodes:
+                all_nodes.extend(nodes)
+                print(f"      Got {len(nodes)} nodes")
+            else:
+                print(f"      ❌ Failed")
+            
+            time.sleep(0.5)  # Small delay between requests
+    
+    return all_nodes
 
 def deduplicate_nodes(nodes):
     """Remove duplicate nodes based on server:port:type"""
@@ -217,7 +251,6 @@ def deduplicate_nodes(nodes):
         port = node.get('port', '')
         node_type = node.get('type', '')
         
-        # Create unique key
         key = f"{server}:{port}:{node_type}"
         
         if key not in seen:
@@ -279,7 +312,15 @@ def get_flag_emoji(code):
         'IT': '🇮🇹', 'ES': '🇪🇸', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮',
         'DK': '🇩🇰', 'PL': '🇵🇱', 'UA': '🇺🇦', 'RO': '🇷🇴', 'CZ': '🇨🇿',
         'AT': '🇦🇹', 'CH': '🇨🇭', 'BE': '🇧🇪', 'IE': '🇮🇪', 'NZ': '🇳🇿',
-        'ZA': '🇿🇦', 'EG': '🇪🇬', 'IL': '🇮🇱', 'SA': '🇸🇦', 'CL': '🇨🇱'
+        'ZA': '🇿🇦', 'EG': '🇪🇬', 'IL': '🇮🇱', 'SA': '🇸🇦', 'CL': '🇨🇱',
+        'CO': '🇨🇴', 'PE': '🇵🇪', 'VE': '🇻🇪', 'EC': '🇪🇨', 'PT': '🇵🇹',
+        'GR': '🇬🇷', 'HU': '🇭🇺', 'IS': '🇮🇸', 'LU': '🇱🇺', 'SK': '🇸🇰',
+        'SI': '🇸🇮', 'BG': '🇧🇬', 'HR': '🇭🇷', 'RS': '🇷🇸', 'LT': '🇱🇹',
+        'LV': '🇱🇻', 'EE': '🇪🇪', 'MD': '🇲🇩', 'AM': '🇦🇲', 'GE': '🇬🇪',
+        'AZ': '🇦🇿', 'KZ': '🇰🇿', 'UZ': '🇺🇿', 'BD': '🇧🇩', 'LK': '🇱🇰',
+        'MM': '🇲🇲', 'KH': '🇰🇭', 'LA': '🇱🇦', 'MO': '🇲🇴', 'PK': '🇵🇰',
+        'CW': '🇨🇼', 'DO': '🇩🇴', 'PA': '🇵🇦', 'CR': '🇨🇷', 'UY': '🇺🇾',
+        'IR': '🇮🇷', 'KE': '🇰🇪', 'NG': '🇳🇬', 'TN': '🇹🇳', 'LY': '🇱🇾'
     }
     return flags.get(code.upper(), '🌍')
 
@@ -310,12 +351,14 @@ def main():
         print(f"❌ Failed to read sources.txt: {e}")
         return
     
-    # Fetch all nodes via subconverter
-    all_nodes = fetch_via_subconverter(urls)
+    # Fetch all nodes in batches
+    all_nodes = fetch_subscriptions_batch(urls, batch_size=3)
     
     if not all_nodes:
         print("❌ No nodes fetched from subscriptions")
         return
+    
+    print(f"\n📊 Total nodes fetched: {len(all_nodes)}")
     
     # Deduplicate
     all_nodes = deduplicate_nodes(all_nodes)
@@ -324,7 +367,6 @@ def main():
     # Detect locations with MaxMind
     print(f"\n🌍 Detecting accurate locations with MaxMind...")
     country_nodes = defaultdict(list)
-    sg_servers = []  # Track Singapore servers for debugging
     
     for idx, node in enumerate(all_nodes, 1):
         if idx % 50 == 0:
@@ -334,19 +376,13 @@ def main():
         if not server:
             continue
         
-        # Get country code
         country = geo.get_location(server)
         country_nodes[country].append(node)
         
-        # Track Singapore servers
-        if country == 'SG':
-            sg_servers.append(server)
-        
-        # Small delay to be nice to DNS
         if idx % 100 == 0:
             time.sleep(0.1)
     
-    # Print geo statistics
+    # Print statistics
     geo.print_stats()
     
     # Show country distribution
@@ -357,36 +393,26 @@ def main():
         count = len(nodes)
         print(f"   {flag} {country}: {count} nodes")
     
-    # Special focus on Singapore
+    # Process Singapore nodes
     sg_nodes = country_nodes.get('SG', [])
     print(f"\n🇸🇬 Singapore Nodes: {len(sg_nodes)}")
     
-    if sg_nodes and len(sg_nodes) <= 20:
-        print("   Sample servers:")
-        for server in sg_servers[:10]:
-            info = geo.get_detailed_info(server)
-            if info:
-                print(f"   - {server}: {info['city']}")
-    
-    # Rename nodes with proper format
+    # Rename nodes
     renamed_nodes = []
     sg_node_names = []
     all_node_names = []
     
-    # Process Singapore nodes first
+    # Singapore first
     if sg_nodes:
-        print(f"\n🇸🇬 Processing {len(sg_nodes)} Singapore nodes...")
         for idx, node in enumerate(sg_nodes, 1):
             node_name = f"🇸🇬 SG-{idx:03d}"
             node['name'] = node_name
             renamed_nodes.append(node)
             sg_node_names.append(node_name)
             all_node_names.append(node_name)
-        
-        # Remove SG from country_nodes
         del country_nodes['SG']
     
-    # Process other countries
+    # Other countries
     for country_code in sorted(country_nodes.keys()):
         nodes = country_nodes[country_code]
         flag = get_flag_emoji(country_code)
@@ -397,7 +423,6 @@ def main():
             renamed_nodes.append(node)
             all_node_names.append(node_name)
     
-    # Ensure we have some nodes
     if not all_node_names:
         print("❌ No valid nodes after processing")
         return
@@ -412,7 +437,7 @@ def main():
         ]
     }
     
-    # Write output file
+    # Write output
     tz = pytz.timezone('Asia/Singapore')
     update_time = datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S %Z')
     
@@ -420,11 +445,10 @@ def main():
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
         f.write(f"# Singapore Nodes: {len(sg_node_names)}\n")
-        f.write("# Parsing: Subconverter | Geo: MaxMind GeoLite2\n")
+        f.write("# Parsing: Subconverter (batch) | Geo: MaxMind GeoLite2\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
-    # Cleanup
     geo.close()
     
     print(f"\n" + "=" * 50)
@@ -432,7 +456,6 @@ def main():
     print(f"📊 Summary:")
     print(f"   Total proxies: {len(renamed_nodes)}")
     print(f"   Singapore nodes: {len(sg_node_names)}")
-    print(f"   Countries: {len(set(c for c in country_nodes.keys()))}")
     print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
