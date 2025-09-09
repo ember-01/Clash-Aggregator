@@ -7,9 +7,10 @@ on:
   push:
     paths:
       - 'sources.txt'
+      - 'aggregator.py'
 
 permissions:
-  contents: write  # Give write permission to push changes
+  contents: write
 
 jobs:
   aggregate:
@@ -28,9 +29,11 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install pyyaml requests pytz
+        pip install pyyaml requests pytz geoip2
     
-    - name: Run aggregator
+    - name: Run aggregator with MaxMind
+      env:
+        MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       run: python aggregator.py
     
     - name: Commit and push if changed
@@ -38,4 +41,4 @@ jobs:
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add clash.yaml
-        git diff --staged --quiet || (git commit -m "🔄 Auto-update clash.yaml" && git push)
+        git diff --staged --quiet || (git commit -m "🔄 Update proxies [Subconverter + MaxMind]" && git push)
