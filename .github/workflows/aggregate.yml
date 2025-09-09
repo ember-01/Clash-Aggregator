@@ -1,8 +1,8 @@
 name: Aggregate Clash Subscriptions
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour
+#  schedule:
+#    - cron: '0 * * * *'  # Every hour
   workflow_dispatch:  # Manual trigger
   push:
     paths:
