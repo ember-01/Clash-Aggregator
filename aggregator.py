@@ -390,7 +390,7 @@ def parse_base64_list(content):
     return nodes
 
 def parse_url_node(url):
-    """Parse single URL node"""
+    """Parse single URL node - FIXED SS parsing"""
     nodes = []
     
     if url.startswith('vmess://'):
@@ -406,6 +406,8 @@ def parse_url_node(url):
     elif url.startswith('ss://'):
         try:
             ss_data = url[5:]
+            
+            # Extract node name if present
             if '#' in ss_data:
                 ss_main, ss_name = ss_data.split('#', 1)
                 ss_name = urllib.parse.unquote(ss_name)
@@ -413,17 +415,89 @@ def parse_url_node(url):
                 ss_main = ss_data
                 ss_name = 'Unnamed'
             
+            # Parse SS URL - there are two formats
             if '@' in ss_main:
-                method_pass = ss_main.split('@')[0]
+                # Format 1: ss://base64(cipher:password)@server:port
+                method_pass_encoded = ss_main.split('@')[0]
                 server_port = ss_main.split('@')[1]
                 
-                decoded_mp = base64.b64decode(method_pass + '=' * (4 - len(method_pass) % 4)).decode('utf-8')
-                cipher, password = decoded_mp.split(':', 1)
+                # Decode the method:password part
+                try:
+                    # Add padding if needed
+                    padding = 4 - len(method_pass_encoded) % 4
+                    if padding != 4:
+                        method_pass_encoded += '=' * padding
+                    
+                    # Decode base64
+                    decoded_mp = base64.b64decode(method_pass_encoded).decode('utf-8')
+                    
+                    # Split cipher and password
+                    if ':' in decoded_mp:
+                        cipher, password = decoded_mp.split(':', 1)
+                    else:
+                        # Malformed, skip
+                        return nodes
+                except Exception as e:
+                    # Try URL decode first
+                    method_pass_encoded = urllib.parse.unquote(method_pass_encoded)
+                    try:
+                        decoded_mp = base64.b64decode(method_pass_encoded + '=' * (4 - len(method_pass_encoded) % 4)).decode('utf-8')
+                        if ':' in decoded_mp:
+                            cipher, password = decoded_mp.split(':', 1)
+                        else:
+                            return nodes
+                    except:
+                        return nodes
                 
-                server, port = server_port.rsplit(':', 1)
-                if '?' in port:
-                    port = port.split('?')[0]
+                # Parse server and port
+                if ':' in server_port:
+                    server, port_query = server_port.rsplit(':', 1)
+                    # Remove query parameters if present
+                    port = port_query.split('?')[0].split('/')[0]
+                else:
+                    return nodes
                 
+            else:
+                # Format 2: ss://base64(cipher:password@server:port)
+                try:
+                    # Add padding if needed
+                    padding = 4 - len(ss_main) % 4
+                    if padding != 4:
+                        ss_main += '=' * padding
+                    
+                    decoded = base64.b64decode(ss_main).decode('utf-8')
+                    
+                    if '@' in decoded:
+                        method_pass, server_port = decoded.split('@', 1)
+                        if ':' in method_pass:
+                            cipher, password = method_pass.split(':', 1)
+                        else:
+                            return nodes
+                        
+                        if ':' in server_port:
+                            server, port = server_port.rsplit(':', 1)
+                        else:
+                            return nodes
+                    else:
+                        return nodes
+                except:
+                    return nodes
+            
+            # Validate cipher method
+            valid_ciphers = [
+                'aes-128-gcm', 'aes-192-gcm', 'aes-256-gcm',
+                'aes-128-cfb', 'aes-192-cfb', 'aes-256-cfb',
+                'aes-128-ctr', 'aes-192-ctr', 'aes-256-ctr',
+                'rc4-md5', 'chacha20', 'chacha20-ietf', 'chacha20-ietf-poly1305',
+                'xchacha20-ietf-poly1305'
+            ]
+            
+            if cipher.lower() not in valid_ciphers:
+                print(f"   ⚠️ Invalid SS cipher: {cipher}")
+                return nodes
+            
+            # Create node
+            try:
                 node = {
                     'name': ss_name,
                     'type': 'ss',
@@ -433,7 +507,13 @@ def parse_url_node(url):
                     'password': password
                 }
                 nodes.append(node)
-        except:
+            except ValueError:
+                # Port is not a valid integer
+                pass
+                
+        except Exception as e:
+            # Debug output for troubleshooting
+            # print(f"   ⚠️ Failed to parse SS URL: {e}")
             pass
             
     elif url.startswith('trojan://'):
@@ -446,26 +526,37 @@ def parse_url_node(url):
                 trojan_main = trojan_data
                 trojan_name = 'Unnamed'
             
-            password, server_part = trojan_main.split('@', 1)
-            server, port = server_part.rsplit(':', 1)
-            if '?' in port:
-                port = port.split('?')[0]
+            if '@' in trojan_main:
+                password = trojan_main.split('@')[0]
+                server_part = trojan_main.split('@')[1]
+                
+                if ':' in server_part:
+                    server, port_query = server_part.rsplit(':', 1)
+                    port = port_query.split('?')[0].split('/')[0]
+                else:
+                    return nodes
+            else:
+                return nodes
             
-            node = {
-                'name': trojan_name,
-                'type': 'trojan',
-                'server': server,
-                'port': int(port),
-                'password': password
-            }
-            nodes.append(node)
+            try:
+                node = {
+                    'name': trojan_name,
+                    'type': 'trojan',
+                    'server': server,
+                    'port': int(port),
+                    'password': password
+                }
+                nodes.append(node)
+            except ValueError:
+                pass
+                
         except:
             pass
     
     return nodes
 
 def validate_and_clean_node(node):
-    """Validate and clean node configuration"""
+    """Validate and clean node configuration - with better SS validation"""
     if not isinstance(node, dict):
         return None
     
@@ -473,9 +564,12 @@ def validate_and_clean_node(node):
         return None
     
     node_type = node.get('type', '').lower()
+    
+    # Skip problematic VLESS/REALITY nodes
     if node_type in ['vless', 'reality'] and ('reality-opts' in node or 'flow' in node):
         return None
     
+    # Validate port
     try:
         port = int(node.get('port', 0))
         if port <= 0 or port > 65535:
@@ -484,9 +578,42 @@ def validate_and_clean_node(node):
     except:
         return None
     
+    # Type-specific validation
     if node_type == 'ss':
         if 'cipher' not in node or 'password' not in node:
             return None
+        
+        # Validate cipher is actually a cipher method, not base64 or malformed
+        cipher = node.get('cipher', '')
+        valid_ciphers = [
+            'aes-128-gcm', 'aes-192-gcm', 'aes-256-gcm',
+            'aes-128-cfb', 'aes-192-cfb', 'aes-256-cfb',
+            'aes-128-ctr', 'aes-192-ctr', 'aes-256-ctr',
+            'rc4-md5', 'chacha20', 'chacha20-ietf', 'chacha20-ietf-poly1305',
+            'xchacha20-ietf-poly1305', 'none', 'plain', 'rc4', 'rc4-md5',
+            'aes-128-ofb', 'aes-192-ofb', 'aes-256-ofb',
+            'aes-128-ccm', 'aes-192-ccm', 'aes-256-ccm',
+            '2022-blake3-aes-128-gcm', '2022-blake3-aes-256-gcm',
+            '2022-blake3-chacha20-poly1305'
+        ]
+        
+        # Check if cipher looks like base64 or contains colons
+        if ':' in cipher or len(cipher) > 30 or cipher.lower() not in valid_ciphers:
+            # Try to fix it if it's base64 encoded
+            try:
+                decoded = base64.b64decode(cipher + '=' * (4 - len(cipher) % 4)).decode('utf-8')
+                if ':' in decoded:
+                    actual_cipher, actual_password = decoded.split(':', 1)
+                    if actual_cipher.lower() in valid_ciphers:
+                        node['cipher'] = actual_cipher
+                        node['password'] = actual_password
+                    else:
+                        return None
+                else:
+                    return None
+            except:
+                return None
+                
     elif node_type == 'vmess':
         if 'uuid' not in node:
             return None
@@ -495,10 +622,12 @@ def validate_and_clean_node(node):
                 node['alterId'] = int(node['alterId'])
             except:
                 node['alterId'] = 0
+                
     elif node_type == 'trojan':
         if 'password' not in node:
             return None
     
+    # Remove problematic fields
     problematic_fields = [
         '_index', '_type', 'clashType', 'proxies', 'rules',
         'benchmarkUrl', 'reality-opts', 'flow', 'xudp',
@@ -507,6 +636,7 @@ def validate_and_clean_node(node):
     for field in problematic_fields:
         node.pop(field, None)
     
+    # Ensure name exists
     if 'name' not in node:
         node['name'] = 'Unnamed'
     
