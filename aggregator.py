@@ -15,6 +15,19 @@ import urllib3
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Global statistics for debugging
+STATS = {
+    'total_fetched': 0,
+    'after_validation': 0,
+    'after_dedup': 0,
+    'after_health_check': 0,
+    'sg_found': 0,
+    'sg_lost_in_geo': 0,
+    'parse_errors': 0,
+    'health_failures': 0,
+    'vless_skipped': 0
+}
+
 def get_flag_by_country_code(code):
     """Get flag emoji by country code"""
     flags = {
@@ -26,142 +39,165 @@ def get_flag_by_country_code(code):
         'IT': '🇮🇹', 'ES': '🇪🇸', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮',
         'DK': '🇩🇰', 'PL': '🇵🇱', 'UA': '🇺🇦', 'RO': '🇷🇴', 'CZ': '🇨🇿',
         'AT': '🇦🇹', 'CH': '🇨🇭', 'BE': '🇧🇪', 'IE': '🇮🇪', 'NZ': '🇳🇿',
-        'ZA': '🇿🇦', 'EG': '🇪🇬', 'KE': '🇰🇪', 'IL': '🇮🇱', 'SA': '🇸🇦',
-        'CL': '🇨🇱', 'CO': '🇨🇴', 'PE': '🇵🇪', 'VE': '🇻🇪', 'EC': '🇪🇨',
-        'PT': '🇵🇹', 'GR': '🇬🇷', 'HU': '🇭🇺', 'IS': '🇮🇸', 'LU': '🇱🇺',
-        'SK': '🇸🇰', 'SI': '🇸🇮', 'BG': '🇧🇬', 'HR': '🇭🇷', 'RS': '🇷🇸',
-        'LT': '🇱🇹', 'LV': '🇱🇻', 'EE': '🇪🇪', 'MD': '🇲🇩', 'AM': '🇦🇲',
-        'GE': '🇬🇪', 'AZ': '🇦🇿', 'KZ': '🇰🇿', 'UZ': '🇺🇿', 'TJ': '🇹🇯',
-        'KG': '🇰🇬', 'TM': '🇹🇲', 'MN': '🇲🇳', 'NP': '🇳🇵', 'BD': '🇧🇩',
-        'LK': '🇱🇰', 'MM': '🇲🇲', 'KH': '🇰🇭', 'LA': '🇱🇦', 'BN': '🇧🇳',
-        'MO': '🇲🇴', 'PK': '🇵🇰', 'AF': '🇦🇫', 'JO': '🇯🇴', 'LB': '🇱🇧',
-        'CW': '🇨🇼', 'PR': '🇵🇷', 'TT': '🇹🇹', 'BB': '🇧🇧', 'MT': '🇲🇹',
-        'CY': '🇨🇾', 'PA': '🇵🇦', 'CR': '🇨🇷', 'NI': '🇳🇮', 'HN': '🇭🇳'
+        'ZA': '🇿🇦', 'EG': '🇪🇬', 'KE': '🇰🇪', 'IL': '🇮🇱', 'SA': '🇸🇦'
     }
     return flags.get(code.upper(), '🌍')
 
-def test_proxy_smart(node):
-    """Enhanced testing with better geo-detection"""
+def is_singapore_node(node):
+    """Check if node is likely Singapore based on multiple signals"""
+    server = get_node_server(node)
+    name = node.get('name', '').lower()
+    
+    # Strong indicators for Singapore
+    sg_indicators = [
+        'singapore', 'sg', '新加坡', 'singapura', 'sgp',
+        'sin', 'lion city', '狮城', 'sg01', 'sg02', 'sg03',
+        'sg-', '_sg', '-sg', 'aws-sg', 'do-sg', 'vultr-sg'
+    ]
+    
+    # Check node name
+    for indicator in sg_indicators:
+        if indicator in name:
+            return True
+    
+    # Check server domain
+    if server:
+        server_lower = server.lower()
+        for indicator in sg_indicators:
+            if indicator in server_lower:
+                return True
+        
+        # Check Singapore domains
+        if '.sg' in server_lower or 'singapore' in server_lower:
+            return True
+    
+    return False
+
+def test_proxy_enhanced(node, quick_mode=False):
+    """Enhanced testing with Singapore-aware detection"""
+    global STATS
     server = get_node_server(node)
     port = node.get('port')
     
     if not server or not port:
         return None, False
     
+    # If quick mode, skip health check
+    if quick_mode:
+        # Just do geo-location
+        country = detect_country_smart(server, node)
+        return country, True
+    
     # Test TCP connectivity
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(3)
+        sock.settimeout(2)  # Shorter timeout for speed
         
-        # Resolve domain to IP
         try:
             ip = socket.gethostbyname(server)
         except:
+            STATS['health_failures'] += 1
             return None, False
         
-        # Test connection
         result = sock.connect_ex((ip, int(port)))
         sock.close()
         
         if result != 0:
+            STATS['health_failures'] += 1
             return None, False
         
-        # Get location with enhanced detection
-        country = None
-        
-        # Special handling for known patterns
-        server_lower = server.lower()
-        
-        # Domain-based hints (more reliable for CDN/relay services)
-        domain_hints = {
-            '.sg': 'SG', 'singapore': 'SG', 'sgp': 'SG',
-            '.jp': 'JP', 'japan': 'JP', 'tokyo': 'JP', 'osaka': 'JP',
-            '.kr': 'KR', 'korea': 'KR', 'seoul': 'KR',
-            '.hk': 'HK', 'hongkong': 'HK', 'hong-kong': 'HK',
-            '.tw': 'TW', 'taiwan': 'TW', 'taipei': 'TW',
-            '.us': 'US', 'america': 'US', 'united-states': 'US', 'usa': 'US',
-            '.uk': 'GB', 'united-kingdom': 'GB', 'london': 'GB', 'britain': 'GB',
-            '.de': 'DE', 'germany': 'DE', 'frankfurt': 'DE', 'berlin': 'DE',
-            '.fr': 'FR', 'france': 'FR', 'paris': 'FR',
-            '.nl': 'NL', 'netherlands': 'NL', 'amsterdam': 'NL',
-            '.ca': 'CA', 'canada': 'CA', 'toronto': 'CA',
-            '.au': 'AU', 'australia': 'AU', 'sydney': 'AU',
-            '.in': 'IN', 'india': 'IN', 'mumbai': 'IN',
-            '.my': 'MY', 'malaysia': 'MY', 'kuala': 'MY',
-            '.th': 'TH', 'thailand': 'TH', 'bangkok': 'TH',
-            '.vn': 'VN', 'vietnam': 'VN', 'hanoi': 'VN',
-            '.id': 'ID', 'indonesia': 'ID', 'jakarta': 'ID',
-            '.ph': 'PH', 'philippines': 'PH', 'manila': 'PH',
-            '.tr': 'TR', 'turkey': 'TR', 'istanbul': 'TR',
-            '.ae': 'AE', 'dubai': 'AE', 'emirates': 'AE',
-            '.br': 'BR', 'brazil': 'BR', 'sao-paulo': 'BR',
-            '.ru': 'RU', 'russia': 'RU', 'moscow': 'RU',
-            '.it': 'IT', 'italy': 'IT', 'milan': 'IT',
-            '.es': 'ES', 'spain': 'ES', 'madrid': 'ES',
-            '.se': 'SE', 'sweden': 'SE', 'stockholm': 'SE',
-            '.no': 'NO', 'norway': 'NO', 'oslo': 'NO',
-            '.fi': 'FI', 'finland': 'FI', 'helsinki': 'FI',
-            '.pl': 'PL', 'poland': 'PL', 'warsaw': 'PL',
-            '.ua': 'UA', 'ukraine': 'UA', 'kiev': 'UA',
-            '.za': 'ZA', 'south-africa': 'ZA', 'johannesburg': 'ZA'
-        }
-        
-        # Check domain hints first (more reliable for CDN)
-        for hint, cc in domain_hints.items():
-            if hint in server_lower:
-                country = cc
-                break
-        
-        # If no domain hint, use IP geolocation
-        if not country:
-            try:
-                # Try ip-api.com with more fields
-                response = requests.get(
-                    f'http://ip-api.com/json/{ip}?fields=status,countryCode,country,city,isp,org,as',
-                    timeout=2
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get('status') == 'success':
-                        country = data.get('countryCode', 'UN')
-                        
-                        # Double-check with city names if available
-                        city = data.get('city', '').lower()
-                        for hint, cc in domain_hints.items():
-                            if hint in city:
-                                country = cc
-                                break
-            except:
-                pass
-        
-        # Fallback to ipinfo.io
-        if not country or country == 'UN':
-            try:
-                response = requests.get(f'https://ipinfo.io/{ip}/json', timeout=2)
-                if response.status_code == 200:
-                    data = response.json()
-                    country = data.get('country', 'UN')
-            except:
-                pass
-        
-        if not country:
-            country = 'UN'
-        
-        return country.upper(), True
+        # Get country with Singapore priority
+        country = detect_country_smart(server, node)
+        return country, True
         
     except:
+        STATS['health_failures'] += 1
         return None, False
 
-def batch_test_proxies_smart(nodes, max_workers=30):
-    """Test proxies with smart detection"""
+def detect_country_smart(server, node):
+    """Smart country detection with Singapore priority"""
+    global STATS
+    
+    # First, check if it's obviously Singapore
+    if is_singapore_node(node):
+        STATS['sg_found'] += 1
+        return 'SG'
+    
+    # Try to resolve to IP
+    try:
+        ip = socket.gethostbyname(server)
+    except:
+        ip = server
+    
+    # Singapore IP ranges (common hosting providers in SG)
+    sg_ip_patterns = [
+        r'^103\.253\.14[4-7]\.',  # Singapore hosting
+        r'^103\.28\.5[4-5]\.',    # Singapore servers
+        r'^128\.199\.8[0-9]\.',   # DigitalOcean Singapore
+        r'^139\.59\.1[0-2][0-9]\.', # DigitalOcean Singapore
+        r'^188\.166\.1[7-9][0-9]\.', # DigitalOcean Singapore  
+        r'^206\.189\.[0-4][0-9]\.', # DigitalOcean Singapore
+        r'^13\.250\.',            # AWS Singapore
+        r'^13\.251\.',            # AWS Singapore
+        r'^52\.76\.',             # AWS Singapore
+        r'^52\.77\.',             # AWS Singapore
+        r'^54\.25[1-5]\.',        # AWS Singapore
+        r'^175\.41\.',            # AWS Singapore
+        r'^46\.137\.2[0-5][0-9]\.', # AWS Singapore
+        r'^52\.221\.',            # AWS Singapore
+        r'^54\.169\.',            # AWS Singapore
+        r'^122\.248\.',           # AWS Singapore
+    ]
+    
+    for pattern in sg_ip_patterns:
+        if re.match(pattern, ip):
+            STATS['sg_found'] += 1
+            return 'SG'
+    
+    # Check with API
+    try:
+        response = requests.get(
+            f'http://ip-api.com/json/{ip}?fields=status,countryCode,country,city',
+            timeout=2
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                country = data.get('countryCode', 'UN')
+                city = data.get('city', '').lower()
+                
+                # Double-check for Singapore
+                if country == 'SG' or 'singapore' in city:
+                    STATS['sg_found'] += 1
+                    return 'SG'
+                
+                # If API says it's not SG but we think it is, trust our detection
+                if is_singapore_node(node):
+                    STATS['sg_lost_in_geo'] += 1
+                    return 'SG'  # Override API result
+                
+                return country.upper()
+    except:
+        pass
+    
+    # If all else fails but node indicates Singapore
+    if is_singapore_node(node):
+        STATS['sg_found'] += 1
+        return 'SG'
+    
+    return 'UN'
+
+def batch_test_with_diagnostics(nodes, max_workers=50, quick_mode=False):
+    """Test proxies with detailed diagnostics"""
     print(f"\n🔬 Testing {len(nodes)} proxies...")
+    print(f"   Mode: {'Quick (no health check)' if quick_mode else 'Full (with health check)'}")
     
     valid_nodes = []
     country_stats = defaultdict(int)
-    dead_count = 0
+    sg_nodes_found = []
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_node = {executor.submit(test_proxy_smart, node): node for node in nodes}
+        future_to_node = {executor.submit(test_proxy_enhanced, node, quick_mode): node for node in nodes}
         
         completed = 0
         for future in concurrent.futures.as_completed(future_to_node):
@@ -177,67 +213,83 @@ def batch_test_proxies_smart(nodes, max_workers=30):
                     node['detected_country'] = country
                     valid_nodes.append(node)
                     country_stats[country] += 1
-                else:
-                    dead_count += 1
+                    
+                    if country == 'SG':
+                        sg_nodes_found.append(node)
             except:
-                dead_count += 1
+                pass
     
     print(f"\n   ✅ Testing Complete:")
-    print(f"      Working proxies: {len(valid_nodes)}")
-    print(f"      Dead proxies: {dead_count}")
+    print(f"      Valid nodes: {len(valid_nodes)}")
+    print(f"      🇸🇬 Singapore nodes found: {len(sg_nodes_found)}")
     
     return valid_nodes, country_stats
 
-def create_proxy_groups(all_node_names, sg_node_names):
-    """Create proxy groups configuration"""
-    proxy_groups = [
-        {
-            'name': '🔥 ember',
-            'type': 'select',
-            'proxies': [
-                '🌏 ⚡',
-                '🇸🇬 ⚡',
-                '🌏 ⚖️',
-                '🇸🇬 ⚖️'
-            ]
-        },
-        {
-            'name': '🌏 ⚡',
-            'type': 'url-test',
-            'proxies': all_node_names,
-            'url': 'http://clients3.google.com/generate_204',
-            'interval': 300,
-            'tolerance': 50
-        },
-        {
-            'name': '🇸🇬 ⚡',
-            'type': 'url-test',
-            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
-            'url': 'http://clients3.google.com/generate_204',
-            'interval': 300,
-            'tolerance': 50
-        },
-        {
-            'name': '🌏 ⚖️',
-            'type': 'load-balance',
-            'proxies': all_node_names,
-            'url': 'http://clients3.google.com/generate_204',
-            'interval': 300,
-            'strategy': 'round-robin'
-        },
-        {
-            'name': '🇸🇬 ⚖️',
-            'type': 'load-balance',
-            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
-            'url': 'http://clients3.google.com/generate_204',
-            'interval': 300,
-            'strategy': 'round-robin'
-        }
-    ]
+def validate_and_clean_node(node, relaxed=False):
+    """Validate node - with relaxed mode for keeping more nodes"""
+    global STATS
     
-    return proxy_groups
+    if not isinstance(node, dict):
+        return None
+    
+    if 'type' not in node or 'server' not in node or 'port' not in node:
+        return None
+    
+    node_type = node.get('type', '').lower()
+    
+    # In relaxed mode, keep VLESS nodes without reality-opts
+    if not relaxed:
+        if node_type in ['vless', 'reality'] and ('reality-opts' in node or 'flow' in node):
+            STATS['vless_skipped'] += 1
+            return None
+    else:
+        # Only skip if has reality-opts, keep regular VLESS
+        if 'reality-opts' in node:
+            STATS['vless_skipped'] += 1
+            return None
+    
+    # Validate port
+    try:
+        port = int(node.get('port', 0))
+        if port <= 0 or port > 65535:
+            return None
+        node['port'] = port
+    except:
+        return None
+    
+    # Clean problematic fields
+    problematic_fields = [
+        '_index', '_type', 'clashType', 'proxies', 'rules',
+        'benchmarkUrl', 'reality-opts', 'flow', 'xudp',
+        'packet-encoding', 'client-fingerprint', 'fingerprint'
+    ]
+    for field in problematic_fields:
+        node.pop(field, None)
+    
+    if 'name' not in node:
+        node['name'] = 'Unnamed'
+    
+    STATS['after_validation'] += 1
+    return node
 
-# [Keep all parsing functions - parse_v2ray_json, convert_v2ray_to_clash, etc.]
+def get_node_server(node):
+    """Extract server address from node"""
+    if isinstance(node, dict):
+        for field in ['server', 'add', 'address', 'host']:
+            if field in node:
+                return node[field]
+    return None
+
+def get_node_key(node):
+    """Get unique key for node (for better deduplication)"""
+    server = get_node_server(node)
+    port = node.get('port', '')
+    node_type = node.get('type', '')
+    
+    # Use server+port+type as unique key (not just server)
+    return f"{server}:{port}:{node_type}"
+
+# [Keep all parsing functions from before]
 def parse_v2ray_json(content):
     """Parse V2Ray JSON format"""
     nodes = []
@@ -258,7 +310,7 @@ def parse_v2ray_json(content):
                         if node:
                             nodes.append(node)
     except:
-        pass
+        STATS['parse_errors'] += 1
     return nodes
 
 def convert_v2ray_to_clash(v2ray_node):
@@ -303,6 +355,7 @@ def convert_v2ray_to_clash(v2ray_node):
         
         return node
     except:
+        STATS['parse_errors'] += 1
         return None
 
 def convert_v2ray_outbound_to_clash(outbound):
@@ -361,6 +414,7 @@ def convert_v2ray_outbound_to_clash(outbound):
             
         return node
     except:
+        STATS['parse_errors'] += 1
         return None
 
 def parse_base64_list(content):
@@ -376,7 +430,7 @@ def parse_base64_list(content):
         try:
             decoded = base64.b64decode(line + '=' * (4 - len(line) % 4)).decode('utf-8')
             
-            if decoded.startswith(('vmess://', 'ss://', 'trojan://')):
+            if decoded.startswith(('vmess://', 'ss://', 'trojan://', 'vless://')):
                 nodes.extend(parse_url_node(decoded))
             elif decoded.startswith('{'):
                 v2ray_node = json.loads(decoded)
@@ -384,13 +438,13 @@ def parse_base64_list(content):
                 if clash_node:
                     nodes.append(clash_node)
         except:
-            if line.startswith(('vmess://', 'ss://', 'trojan://')):
+            if line.startswith(('vmess://', 'ss://', 'trojan://', 'vless://')):
                 nodes.extend(parse_url_node(line))
     
     return nodes
 
 def parse_url_node(url):
-    """Parse single URL node - FIXED SS parsing"""
+    """Parse single URL node - including VLESS support"""
     nodes = []
     
     if url.startswith('vmess://'):
@@ -401,13 +455,53 @@ def parse_url_node(url):
             if node:
                 nodes.append(node)
         except:
-            pass
+            STATS['parse_errors'] += 1
+            
+    elif url.startswith('vless://'):
+        # Basic VLESS parsing (without REALITY)
+        try:
+            vless_data = url[8:]
+            if '#' in vless_data:
+                vless_main, vless_name = vless_data.split('#', 1)
+                vless_name = urllib.parse.unquote(vless_name)
+            else:
+                vless_main = vless_data
+                vless_name = 'Unnamed'
+            
+            if '@' in vless_main:
+                uuid = vless_main.split('@')[0]
+                server_part = vless_main.split('@')[1]
+                
+                if ':' in server_part:
+                    server, port_query = server_part.rsplit(':', 1)
+                    port = port_query.split('?')[0]
+                    
+                    node = {
+                        'name': vless_name,
+                        'type': 'vless',
+                        'server': server,
+                        'port': int(port),
+                        'uuid': uuid,
+                        'udp': True,
+                        'skip-cert-verify': True
+                    }
+                    
+                    # Parse query parameters
+                    if '?' in port_query:
+                        params = urllib.parse.parse_qs(port_query.split('?')[1])
+                        if 'security' in params and params['security'][0] == 'tls':
+                            node['tls'] = True
+                        if 'sni' in params:
+                            node['servername'] = params['sni'][0]
+                    
+                    nodes.append(node)
+        except:
+            STATS['parse_errors'] += 1
             
     elif url.startswith('ss://'):
         try:
             ss_data = url[5:]
             
-            # Extract node name if present
             if '#' in ss_data:
                 ss_main, ss_name = ss_data.split('#', 1)
                 ss_name = urllib.parse.unquote(ss_name)
@@ -415,30 +509,22 @@ def parse_url_node(url):
                 ss_main = ss_data
                 ss_name = 'Unnamed'
             
-            # Parse SS URL - there are two formats
             if '@' in ss_main:
-                # Format 1: ss://base64(cipher:password)@server:port
                 method_pass_encoded = ss_main.split('@')[0]
                 server_port = ss_main.split('@')[1]
                 
-                # Decode the method:password part
                 try:
-                    # Add padding if needed
                     padding = 4 - len(method_pass_encoded) % 4
                     if padding != 4:
                         method_pass_encoded += '=' * padding
                     
-                    # Decode base64
                     decoded_mp = base64.b64decode(method_pass_encoded).decode('utf-8')
                     
-                    # Split cipher and password
                     if ':' in decoded_mp:
                         cipher, password = decoded_mp.split(':', 1)
                     else:
-                        # Malformed, skip
                         return nodes
-                except Exception as e:
-                    # Try URL decode first
+                except:
                     method_pass_encoded = urllib.parse.unquote(method_pass_encoded)
                     try:
                         decoded_mp = base64.b64decode(method_pass_encoded + '=' * (4 - len(method_pass_encoded) % 4)).decode('utf-8')
@@ -449,18 +535,13 @@ def parse_url_node(url):
                     except:
                         return nodes
                 
-                # Parse server and port
                 if ':' in server_port:
                     server, port_query = server_port.rsplit(':', 1)
-                    # Remove query parameters if present
                     port = port_query.split('?')[0].split('/')[0]
                 else:
                     return nodes
-                
             else:
-                # Format 2: ss://base64(cipher:password@server:port)
                 try:
-                    # Add padding if needed
                     padding = 4 - len(ss_main) % 4
                     if padding != 4:
                         ss_main += '=' * padding
@@ -483,7 +564,6 @@ def parse_url_node(url):
                 except:
                     return nodes
             
-            # Validate cipher method
             valid_ciphers = [
                 'aes-128-gcm', 'aes-192-gcm', 'aes-256-gcm',
                 'aes-128-cfb', 'aes-192-cfb', 'aes-256-cfb',
@@ -493,10 +573,8 @@ def parse_url_node(url):
             ]
             
             if cipher.lower() not in valid_ciphers:
-                print(f"   ⚠️ Invalid SS cipher: {cipher}")
                 return nodes
             
-            # Create node
             try:
                 node = {
                     'name': ss_name,
@@ -507,14 +585,11 @@ def parse_url_node(url):
                     'password': password
                 }
                 nodes.append(node)
-            except ValueError:
-                # Port is not a valid integer
-                pass
+            except:
+                STATS['parse_errors'] += 1
                 
-        except Exception as e:
-            # Debug output for troubleshooting
-            # print(f"   ⚠️ Failed to parse SS URL: {e}")
-            pass
+        except:
+            STATS['parse_errors'] += 1
             
     elif url.startswith('trojan://'):
         try:
@@ -547,111 +622,16 @@ def parse_url_node(url):
                     'password': password
                 }
                 nodes.append(node)
-            except ValueError:
-                pass
+            except:
+                STATS['parse_errors'] += 1
                 
         except:
-            pass
+            STATS['parse_errors'] += 1
     
     return nodes
 
-def validate_and_clean_node(node):
-    """Validate and clean node configuration - with better SS validation"""
-    if not isinstance(node, dict):
-        return None
-    
-    if 'type' not in node or 'server' not in node or 'port' not in node:
-        return None
-    
-    node_type = node.get('type', '').lower()
-    
-    # Skip problematic VLESS/REALITY nodes
-    if node_type in ['vless', 'reality'] and ('reality-opts' in node or 'flow' in node):
-        return None
-    
-    # Validate port
-    try:
-        port = int(node.get('port', 0))
-        if port <= 0 or port > 65535:
-            return None
-        node['port'] = port
-    except:
-        return None
-    
-    # Type-specific validation
-    if node_type == 'ss':
-        if 'cipher' not in node or 'password' not in node:
-            return None
-        
-        # Validate cipher is actually a cipher method, not base64 or malformed
-        cipher = node.get('cipher', '')
-        valid_ciphers = [
-            'aes-128-gcm', 'aes-192-gcm', 'aes-256-gcm',
-            'aes-128-cfb', 'aes-192-cfb', 'aes-256-cfb',
-            'aes-128-ctr', 'aes-192-ctr', 'aes-256-ctr',
-            'rc4-md5', 'chacha20', 'chacha20-ietf', 'chacha20-ietf-poly1305',
-            'xchacha20-ietf-poly1305', 'none', 'plain', 'rc4', 'rc4-md5',
-            'aes-128-ofb', 'aes-192-ofb', 'aes-256-ofb',
-            'aes-128-ccm', 'aes-192-ccm', 'aes-256-ccm',
-            '2022-blake3-aes-128-gcm', '2022-blake3-aes-256-gcm',
-            '2022-blake3-chacha20-poly1305'
-        ]
-        
-        # Check if cipher looks like base64 or contains colons
-        if ':' in cipher or len(cipher) > 30 or cipher.lower() not in valid_ciphers:
-            # Try to fix it if it's base64 encoded
-            try:
-                decoded = base64.b64decode(cipher + '=' * (4 - len(cipher) % 4)).decode('utf-8')
-                if ':' in decoded:
-                    actual_cipher, actual_password = decoded.split(':', 1)
-                    if actual_cipher.lower() in valid_ciphers:
-                        node['cipher'] = actual_cipher
-                        node['password'] = actual_password
-                    else:
-                        return None
-                else:
-                    return None
-            except:
-                return None
-                
-    elif node_type == 'vmess':
-        if 'uuid' not in node:
-            return None
-        if 'alterId' in node:
-            try:
-                node['alterId'] = int(node['alterId'])
-            except:
-                node['alterId'] = 0
-                
-    elif node_type == 'trojan':
-        if 'password' not in node:
-            return None
-    
-    # Remove problematic fields
-    problematic_fields = [
-        '_index', '_type', 'clashType', 'proxies', 'rules',
-        'benchmarkUrl', 'reality-opts', 'flow', 'xudp',
-        'packet-encoding', 'client-fingerprint', 'fingerprint'
-    ]
-    for field in problematic_fields:
-        node.pop(field, None)
-    
-    # Ensure name exists
-    if 'name' not in node:
-        node['name'] = 'Unnamed'
-    
-    return node
-
-def get_node_server(node):
-    """Extract server address from node"""
-    if isinstance(node, dict):
-        for field in ['server', 'add', 'address', 'host']:
-            if field in node:
-                return node[field]
-    return None
-
 def fetch_subscription(url):
-    """Fetch and decode subscription content - always returns a list"""
+    """Fetch and decode subscription content"""
     try:
         headers = {
             'User-Agent': 'clash-verge/1.0'
@@ -659,12 +639,9 @@ def fetch_subscription(url):
         response = requests.get(url, timeout=10, headers=headers)
         content = response.text.strip()
         
-        # Check if content is empty
         if not content:
-            print(f"   ⚠️ Empty response from URL")
             return []
         
-        # Try parsing as YAML first
         try:
             data = yaml.safe_load(content)
             if isinstance(data, dict) and 'proxies' in data:
@@ -674,13 +651,11 @@ def fetch_subscription(url):
         except:
             pass
         
-        # Try V2Ray JSON format
         if content.startswith('{') or content.startswith('['):
             nodes = parse_v2ray_json(content)
             if nodes:
                 return nodes
         
-        # Try base64 decode
         try:
             decoded = base64.b64decode(content).decode('utf-8')
             
@@ -695,130 +670,180 @@ def fetch_subscription(url):
         except:
             pass
         
-        # Try as direct URL list
         nodes = parse_base64_list(content)
         if nodes:
             return nodes
         
-        # If nothing worked, return empty list
         return []
         
     except Exception as e:
         print(f"   ❌ Error fetching {url}: {e}")
-        return []  # Always return a list, even on error
+        return []
+
+def create_proxy_groups(all_node_names, sg_node_names):
+    """Create proxy groups configuration"""
+    proxy_groups = [
+        {
+            'name': '🔥 ember',
+            'type': 'select',
+            'proxies': [
+                '🌏 ⚡',
+                '🇸🇬 ⚡',
+                '🌏 ⚖️',
+                '🇸🇬 ⚖️'
+            ]
+        },
+        {
+            'name': '🌏 ⚡',
+            'type': 'url-test',
+            'proxies': all_node_names,
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'tolerance': 50
+        },
+        {
+            'name': '🇸🇬 ⚡',
+            'type': 'url-test',
+            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'tolerance': 50
+        },
+        {
+            'name': '🌏 ⚖️',
+            'type': 'load-balance',
+            'proxies': all_node_names,
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'strategy': 'round-robin'
+        },
+        {
+            'name': '🇸🇬 ⚖️',
+            'type': 'load-balance',
+            'proxies': sg_node_names if sg_node_names else ['DIRECT'],
+            'url': 'http://clients3.google.com/generate_204',
+            'interval': 300,
+            'strategy': 'round-robin'
+        }
+    ]
+    
+    return proxy_groups
 
 def main():
-    print("🚀 Starting Clash Aggregator with Proxy Groups & Rules...")
+    global STATS
+    
+    print("🚀 Starting Clash Aggregator (Diagnostic Mode)...")
     print("=" * 50)
     
     # Configuration
-    ENABLE_TESTING = True
-    EXCLUDE_UNKNOWN = True
-    MAX_WORKERS = 30
+    ENABLE_HEALTH_CHECK = False  # Set to False for more nodes
+    RELAXED_VALIDATION = True   # Keep more node types
+    QUICK_MODE = True           # Skip health check, just geo
+    MAX_WORKERS = 50
+    
+    print(f"📋 Configuration:")
+    print(f"   Health Check: {'Enabled' if ENABLE_HEALTH_CHECK else 'Disabled'}")
+    print(f"   Validation: {'Relaxed' if RELAXED_VALIDATION else 'Strict'}")
+    print(f"   Mode: {'Quick (no connectivity test)' if QUICK_MODE else 'Full'}")
     
     # Read source URLs
     with open('sources.txt', 'r') as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
     
-    print(f"📋 Found {len(urls)} subscription URLs")
+    print(f"\n📥 Found {len(urls)} subscription URLs")
     
     # Collect all nodes
     all_nodes = []
-    seen_servers = set()
+    seen_node_keys = set()
     
     for idx, url in enumerate(urls, 1):
         print(f"\n📥 Fetching subscription {idx}/{len(urls)}...")
         nodes = fetch_subscription(url)
         
-        # Ensure nodes is always a list
         if nodes is None:
             nodes = []
-            print(f"   ⚠️ No valid nodes found")
-        else:
-            print(f"   Found {len(nodes)} nodes")
+        
+        STATS['total_fetched'] += len(nodes)
+        print(f"   Raw nodes: {len(nodes)}")
+        
+        valid_count = 0
+        sg_count = 0
         
         for node in nodes:
-            cleaned_node = validate_and_clean_node(node)
+            # Check if likely Singapore before validation
+            if is_singapore_node(node):
+                sg_count += 1
+            
+            cleaned_node = validate_and_clean_node(node, relaxed=RELAXED_VALIDATION)
             if cleaned_node:
-                server = get_node_server(cleaned_node)
-                if server and server not in seen_servers:
-                    seen_servers.add(server)
+                node_key = get_node_key(cleaned_node)
+                
+                # Better deduplication (server+port+type)
+                if node_key not in seen_node_keys:
+                    seen_node_keys.add(node_key)
                     all_nodes.append(cleaned_node)
+                    valid_count += 1
+        
+        print(f"   Valid nodes: {valid_count}")
+        print(f"   Potential SG nodes: {sg_count}")
     
-    print(f"\n📊 Collected {len(all_nodes)} unique nodes")
+    STATS['after_dedup'] = len(all_nodes)
     
-    # Check if we have any nodes at all
+    print(f"\n📊 Collection Summary:")
+    print(f"   Total fetched: {STATS['total_fetched']}")
+    print(f"   After validation: {STATS['after_validation']}")
+    print(f"   After deduplication: {STATS['after_dedup']}")
+    print(f"   VLESS skipped: {STATS['vless_skipped']}")
+    print(f"   Parse errors: {STATS['parse_errors']}")
+    
     if not all_nodes:
-        print("\n⚠️ No valid nodes found from any subscription!")
-        print("Creating minimal config with DIRECT only...")
-        
-        # Create minimal output with DIRECT proxy
-        output = {
-            'proxies': [],
-            'proxy-groups': [
-                {
-                    'name': '🔥 ember',
-                    'type': 'select',
-                    'proxies': ['DIRECT']
-                }
-            ],
-            'rules': [
-                'GEOIP,PRIVATE,DIRECT',
-                'MATCH,DIRECT'
-            ]
-        }
-        
-        # Write minimal config
-        tz = pytz.timezone('Asia/Singapore')
-        update_time = datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S %Z')
-        
-        with open('clash.yaml', 'w', encoding='utf-8') as f:
-            f.write(f"# Last Update: {update_time}\n")
-            f.write(f"# WARNING: No valid proxies found!\n")
-            f.write("# Generated by Clash-Aggregator\n\n")
-            yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
-        
-        print("⚠️ Created minimal config file (DIRECT only)")
+        print("\n⚠️ No valid nodes found!")
         return
     
-    # Test proxies
-    if ENABLE_TESTING:
-        valid_nodes, country_stats = batch_test_proxies_smart(all_nodes, max_workers=MAX_WORKERS)
-        
-        if not valid_nodes:
-            print("\n⚠️ No working proxies found after testing!")
-            valid_nodes = all_nodes[:10]  # Use first 10 as fallback
-            print(f"   Using first {len(valid_nodes)} nodes as fallback")
-            
-            # Create fake country stats
-            country_stats = defaultdict(int)
-            for node in valid_nodes:
-                country_stats['UN'] += 1
-        
-        # Show country distribution
-        if country_stats:
-            print(f"\n📊 Country Distribution:")
-            for country, count in sorted(country_stats.items(), key=lambda x: x[1], reverse=True)[:10]:
-                flag = get_flag_by_country_code(country)
-                print(f"   {flag} {country}: {count} nodes")
-        
-        # Group by country
-        country_nodes = defaultdict(list)
-        for node in valid_nodes:
-            country = node.get('detected_country', 'UN')
-            if not (EXCLUDE_UNKNOWN and country == 'UN'):
-                country_nodes[country].append(node)
+    # Test nodes
+    if ENABLE_HEALTH_CHECK or QUICK_MODE:
+        valid_nodes, country_stats = batch_test_with_diagnostics(
+            all_nodes, 
+            max_workers=MAX_WORKERS,
+            quick_mode=QUICK_MODE
+        )
     else:
-        country_nodes = defaultdict(list)
-        for node in all_nodes:
-            country_nodes['UN'].append(node)
+        # No testing, just use all nodes
+        valid_nodes = all_nodes
+        country_stats = defaultdict(int)
+        for node in valid_nodes:
+            country = detect_country_smart(get_node_server(node), node)
+            node['detected_country'] = country
+            country_stats[country] += 1
     
-    # Rename nodes
+    STATS['after_health_check'] = len(valid_nodes)
+    
+    # Show statistics
+    print(f"\n📊 Final Statistics:")
+    print(f"   Health failures: {STATS['health_failures']}")
+    print(f"   Valid nodes after testing: {STATS['after_health_check']}")
+    print(f"   🇸🇬 Singapore nodes found: {STATS['sg_found']}")
+    print(f"   🇸🇬 Singapore nodes lost in geo: {STATS['sg_lost_in_geo']}")
+    
+    # Country distribution
+    if country_stats:
+        print(f"\n🌍 Country Distribution:")
+        for country, count in sorted(country_stats.items(), key=lambda x: x[1], reverse=True)[:15]:
+            flag = get_flag_by_country_code(country)
+            print(f"   {flag} {country}: {count} nodes")
+    
+    # Group by country
+    country_nodes = defaultdict(list)
+    for node in valid_nodes:
+        country = node.get('detected_country', 'UN')
+        country_nodes[country].append(node)
+    
+    # Process nodes
     renamed_nodes = []
     sg_node_names = []
     all_node_names = []
     
-    # Process Singapore nodes first
+    # Singapore first
     if 'SG' in country_nodes:
         print(f"\n🇸🇬 Processing {len(country_nodes['SG'])} Singapore nodes...")
         for idx, node in enumerate(country_nodes['SG'], 1):
@@ -830,7 +855,7 @@ def main():
             all_node_names.append(node_name)
         del country_nodes['SG']
     
-    # Process other countries
+    # Other countries
     for country_code in sorted(country_nodes.keys()):
         nodes = country_nodes[country_code]
         flag = get_flag_by_country_code(country_code)
@@ -842,48 +867,42 @@ def main():
             renamed_nodes.append(node)
             all_node_names.append(node_name)
     
-    # Ensure we have at least some nodes for groups
+    # Ensure we have nodes for groups
     if not all_node_names:
         all_node_names = ['DIRECT']
     if not sg_node_names:
         sg_node_names = ['DIRECT']
     
-    # Create proxy groups
+    # Create output
     proxy_groups = create_proxy_groups(all_node_names, sg_node_names)
     
-    # Create simple but essential rules
     rules = [
         'GEOIP,PRIVATE,DIRECT',
         'MATCH,🔥 ember'
     ]
     
-    # Create output with everything
     output = {
         'proxies': renamed_nodes,
         'proxy-groups': proxy_groups,
         'rules': rules
     }
     
-    # Add update time
+    # Write output
     tz = pytz.timezone('Asia/Singapore')
     update_time = datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S %Z')
     
-    # Write output file
     with open('clash.yaml', 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
-        f.write(f"# Singapore Nodes: {len(sg_node_names) if sg_node_names != ['DIRECT'] else 0}\n")
-        f.write(f"# Proxy Groups: 5 (ember, url-test x2, load-balance x2)\n")
-        f.write(f"# Rules: Simple (PRIVATE->DIRECT, ALL->ember)\n")
+        f.write(f"# Singapore Nodes: {len(sg_node_names)}\n")
+        f.write(f"# Mode: {'Quick' if QUICK_MODE else 'Full'} | Health Check: {'On' if ENABLE_HEALTH_CHECK else 'Off'}\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
     print(f"\n" + "=" * 50)
     print(f"✅ Successfully generated clash.yaml")
     print(f"📊 Total: {len(renamed_nodes)} proxies")
-    print(f"🇸🇬 Singapore: {len(sg_node_names) if sg_node_names != ['DIRECT'] else 0} nodes")
-    print(f"📁 Proxy Groups: 5 groups configured")
-    print(f"📝 Rules: 2 simple rules (all traffic through proxy)")
+    print(f"🇸🇬 Singapore: {len(sg_node_names)} nodes")
     print(f"🕐 Updated at {update_time}")
 
 if __name__ == "__main__":
