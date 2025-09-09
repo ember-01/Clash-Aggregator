@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Clash Aggregator with Clash Core Testing
-Gets real exit location + health check in one go
+Clash Aggregator with Fast Clash Core Testing
+Optimized for speed while maintaining accuracy
 """
 
 import yaml
@@ -16,9 +16,8 @@ from datetime import datetime
 import pytz
 from collections import defaultdict
 from urllib.parse import quote
-import tempfile
-import signal
 import base64
+import threading
 
 def download_clash_core():
     """Download Clash core if not present"""
@@ -28,7 +27,6 @@ def download_clash_core():
     
     print("📥 Downloading Clash core...")
     
-    # Updated URL for Clash Meta (mihomo)
     urls = [
         "https://github.com/MetaCubeX/mihomo/releases/download/v1.18.0/mihomo-linux-amd64-v1.18.0.gz",
         "https://github.com/Dreamacro/clash/releases/download/v1.18.0/clash-linux-amd64-v1.18.0.gz"
@@ -40,18 +38,15 @@ def download_clash_core():
             response = requests.get(url, stream=True, timeout=30)
             
             if response.status_code == 200:
-                # Save as gzip
                 with open('clash.gz', 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 
-                # Extract
                 import gzip
                 with gzip.open('clash.gz', 'rb') as f_in:
                     with open('clash', 'wb') as f_out:
                         f_out.write(f_in.read())
                 
-                # Make executable
                 os.chmod('clash', 0o755)
                 os.remove('clash.gz')
                 
@@ -61,135 +56,175 @@ def download_clash_core():
             print(f"   ❌ Failed: {e}")
             continue
     
-    print("❌ All download attempts failed")
     return False
 
-class ClashTester:
-    """Test proxies using Clash core for real exit location"""
+def quick_tcp_test(node, timeout=0.5):
+    """Ultra-fast TCP connectivity test"""
+    server = node.get('server', '')
+    port = node.get('port', 0)
     
-    def __init__(self, clash_path='./clash', base_port=9000):
+    if not server or not port:
+        return False
+    
+    try:
+        # Quick DNS resolution with cache
+        ip = socket.gethostbyname(server)
+        
+        # Ultra-fast TCP test
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        result = sock.connect_ex((ip, int(port)))
+        sock.close()
+        
+        return result == 0
+    except:
+        return False
+
+def batch_pre_filter(nodes, max_workers=100):
+    """Fast parallel pre-filtering of dead nodes"""
+    print(f"\n⚡ Pre-filtering {len(nodes)} nodes (removing dead ones)...")
+    alive_nodes = []
+    dead_count = 0
+    
+    start_time = time.time()
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_node = {executor.submit(quick_tcp_test, node): node for node in nodes}
+        
+        completed = 0
+        for future in concurrent.futures.as_completed(future_to_node):
+            completed += 1
+            node = future_to_node[future]
+            
+            if completed % 100 == 0:
+                elapsed = time.time() - start_time
+                rate = completed / elapsed
+                print(f"   Progress: {completed}/{len(nodes)} ({rate:.0f} nodes/sec)")
+            
+            try:
+                if future.result():
+                    alive_nodes.append(node)
+                else:
+                    dead_count += 1
+            except:
+                dead_count += 1
+    
+    elapsed = time.time() - start_time
+    print(f"   ✅ Pre-filter done in {elapsed:.1f}s: {len(alive_nodes)} alive, {dead_count} dead")
+    return alive_nodes
+
+class FastClashTester:
+    """Optimized Clash testing with connection pooling"""
+    
+    def __init__(self, clash_path='./clash'):
         self.clash_path = clash_path
-        self.base_port = base_port
-        self.test_results = {}
+        self.base_port = 9000
         self.stats = {
             'tested': 0,
             'alive': 0,
             'dead': 0,
-            'sg_found': 0
+            'sg_found': 0,
+            'start_time': time.time()
         }
     
-    def test_batch(self, nodes, batch_size=10, max_workers=5):
-        """Test nodes in parallel batches"""
-        results = []
-        total = len(nodes)
+    def test_all_fast(self, nodes, batch_size=50):
+        """Fast testing with single Clash instance"""
+        if not nodes:
+            return []
         
-        print(f"\n🔬 Testing {total} proxies with Clash core...")
-        print(f"   Batch size: {batch_size}, Workers: {max_workers}")
+        print(f"\n🚀 Fast Clash testing {len(nodes)} pre-filtered nodes...")
+        print(f"   Batch size: {batch_size}")
+        
+        results = []
         
         # Process in batches
-        for i in range(0, total, batch_size * max_workers):
-            batch = nodes[i:i + batch_size * max_workers]
-            batch_num = (i // (batch_size * max_workers)) + 1
-            total_batches = (total + batch_size * max_workers - 1) // (batch_size * max_workers)
+        for i in range(0, len(nodes), batch_size):
+            batch = nodes[i:i+batch_size]
+            batch_num = (i // batch_size) + 1
+            total_batches = (len(nodes) + batch_size - 1) // batch_size
             
-            print(f"\n📦 Testing batch {batch_num}/{total_batches}...")
+            print(f"\n📦 Batch {batch_num}/{total_batches} ({len(batch)} nodes)...")
+            batch_results = self._test_batch_fast(batch, self.base_port + batch_num)
+            results.extend(batch_results)
             
-            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-                futures = []
-                
-                for j in range(0, len(batch), batch_size):
-                    sub_batch = batch[j:j + batch_size]
-                    port = self.base_port + (j // batch_size)
-                    future = executor.submit(self._test_sub_batch, sub_batch, port)
-                    futures.append(future)
-                
-                # Collect results
-                for future in concurrent.futures.as_completed(futures):
-                    try:
-                        batch_results = future.result()
-                        results.extend(batch_results)
-                    except Exception as e:
-                        print(f"   ❌ Batch error: {e}")
-        
-        # Print statistics
-        print(f"\n📊 Test Results:")
-        print(f"   Total tested: {self.stats['tested']}")
-        print(f"   Alive: {self.stats['alive']} ({self.stats['alive']*100//max(self.stats['tested'],1)}%)")
-        print(f"   Dead: {self.stats['dead']}")
-        print(f"   Singapore found: {self.stats['sg_found']}")
+            # Show progress
+            elapsed = time.time() - self.stats['start_time']
+            rate = self.stats['tested'] / elapsed if elapsed > 0 else 0
+            eta = (len(nodes) - self.stats['tested']) / rate if rate > 0 else 0
+            
+            print(f"   Stats: {self.stats['alive']} alive, {self.stats['dead']} dead")
+            print(f"   Speed: {rate:.1f} nodes/sec, ETA: {eta:.0f}s")
         
         return results
     
-    def _test_sub_batch(self, nodes, port):
-        """Test a sub-batch of nodes with one Clash instance"""
+    def _test_batch_fast(self, nodes, port):
+        """Test a batch with optimized Clash config"""
         results = []
         
-        # Create test config with all nodes
+        # Create optimized config
         config = {
             'mixed-port': port,
             'allow-lan': False,
-            'mode': 'global',
-            'log-level': 'error',
+            'mode': 'rule',  # Use rule mode for better performance
+            'log-level': 'silent',  # Reduce logging overhead
             'external-controller': f'127.0.0.1:{port+1000}',
             'proxies': nodes,
-            'proxy-groups': []
+            'proxy-groups': [{
+                'name': 'test',
+                'type': 'select',
+                'proxies': [n['name'] for n in nodes]
+            }],
+            'rules': ['MATCH,test']
         }
         
-        # Create proxy groups for each node
-        for node in nodes:
-            config['proxy-groups'].append({
-                'name': f"test_{node['name']}",
-                'type': 'select',
-                'proxies': [node['name']]
-            })
-        
-        # Write config
-        config_file = f'test-config-{port}.yaml'
+        config_file = f'test-{port}.yaml'
         with open(config_file, 'w') as f:
             yaml.dump(config, f)
         
-        # Start Clash
         process = None
         try:
+            # Start Clash
             process = subprocess.Popen(
                 [self.clash_path, '-f', config_file],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
             
-            time.sleep(2)  # Wait for Clash to start
+            time.sleep(1.5)  # Reduced startup wait
             
-            # Test each node
-            for node in nodes:
-                self.stats['tested'] += 1
-                result = self._test_single_node(node, port)
+            # Test nodes in parallel threads
+            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                futures = []
+                for node in nodes:
+                    future = executor.submit(self._test_node_fast, node, port)
+                    futures.append((future, node))
                 
-                if result['alive']:
-                    self.stats['alive'] += 1
-                    if result['country'] == 'SG':
-                        self.stats['sg_found'] += 1
-                else:
-                    self.stats['dead'] += 1
-                
-                # Update node with results
-                node['test_result'] = result
-                results.append(node)
-                
-                # Progress
-                if self.stats['tested'] % 10 == 0:
-                    print(f"   Progress: {self.stats['tested']} tested, {self.stats['alive']} alive")
+                for future, node in futures:
+                    try:
+                        result = future.result(timeout=3)
+                        node['test_result'] = result
+                        results.append(node)
+                        
+                        self.stats['tested'] += 1
+                        if result['alive']:
+                            self.stats['alive'] += 1
+                            if result['country'] == 'SG':
+                                self.stats['sg_found'] += 1
+                        else:
+                            self.stats['dead'] += 1
+                    except:
+                        node['test_result'] = {'alive': False, 'country': 'UN'}
+                        results.append(node)
+                        self.stats['dead'] += 1
+                        self.stats['tested'] += 1
             
-        except Exception as e:
-            print(f"   ❌ Error testing batch: {e}")
         finally:
-            # Cleanup
             if process:
                 process.terminate()
-                time.sleep(0.5)
                 try:
-                    process.kill()
+                    process.wait(timeout=1)
                 except:
-                    pass
+                    process.kill()
             
             try:
                 os.remove(config_file)
@@ -198,98 +233,58 @@ class ClashTester:
         
         return results
     
-    def _test_single_node(self, node, port):
-        """Test a single node through Clash"""
-        result = {
-            'alive': False,
-            'country': 'UN',
-            'ip': None,
-            'latency': None
-        }
+    def _test_node_fast(self, node, port):
+        """Fast single node test"""
+        result = {'alive': False, 'country': 'UN', 'latency': None}
         
         try:
-            # Switch to this proxy via Clash API
-            controller_url = f"http://127.0.0.1:{port+1000}/proxies/GLOBAL"
+            # Use controller to switch proxy
+            controller = f"http://127.0.0.1:{port+1000}"
+            
+            # Switch to specific proxy
             requests.put(
-                controller_url,
-                json={'name': f"test_{node['name']}"},
-                timeout=2
+                f"{controller}/proxies/test",
+                json={'name': node['name']},
+                timeout=1
             )
             
-            # Test connection and get exit IP
+            # Quick test with short timeout
             proxies = {
                 'http': f'http://127.0.0.1:{port}',
                 'https': f'http://127.0.0.1:{port}'
             }
             
-            start_time = time.time()
+            start = time.time()
             
-            # Try multiple endpoints for reliability
-            test_urls = [
-                'http://ip-api.com/json',
-                'https://ipapi.co/json',
-                'http://ip.sb/api/ip'
-            ]
+            # Use fastest API
+            response = requests.get(
+                'http://ip-api.com/json?fields=status,countryCode,query',
+                proxies=proxies,
+                timeout=2
+            )
             
-            for test_url in test_urls:
-                try:
-                    response = requests.get(
-                        test_url,
-                        proxies=proxies,
-                        timeout=5
-                    )
-                    
-                    if response.status_code == 200:
-                        latency = int((time.time() - start_time) * 1000)
-                        
-                        if 'ip-api.com' in test_url:
-                            data = response.json()
-                            result = {
-                                'alive': True,
-                                'country': data.get('countryCode', 'UN'),
-                                'ip': data.get('query'),
-                                'latency': latency,
-                                'city': data.get('city'),
-                                'isp': data.get('isp')
-                            }
-                        elif 'ipapi.co' in test_url:
-                            data = response.json()
-                            result = {
-                                'alive': True,
-                                'country': data.get('country_code', 'UN'),
-                                'ip': data.get('ip'),
-                                'latency': latency,
-                                'city': data.get('city')
-                            }
-                        else:
-                            # ip.sb returns plain IP
-                            result = {
-                                'alive': True,
-                                'country': 'UN',  # Will need MaxMind for this
-                                'ip': response.text.strip(),
-                                'latency': latency
-                            }
-                        
-                        break
-                        
-                except:
-                    continue
-            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    result = {
+                        'alive': True,
+                        'country': data.get('countryCode', 'UN'),
+                        'ip': data.get('query'),
+                        'latency': int((time.time() - start) * 1000)
+                    }
         except:
             pass
         
         return result
 
-def fetch_subscriptions_smart(urls):
-    """Fetch subscriptions with multiple methods - FIXED"""
+def fetch_subscriptions_fast(urls):
+    """Fast parallel fetching"""
     all_nodes = []
     
-    for idx, url in enumerate(urls, 1):
-        print(f"\n📥 Fetching {idx}/{len(urls)}: {url[:50]}...")
+    def fetch_single(url):
         nodes = []
-        
-        # Try subconverter first
         try:
+            # Try subconverter
             params = {
                 'target': 'clash',
                 'url': url,
@@ -301,58 +296,48 @@ def fetch_subscriptions_smart(urls):
             response = requests.get(
                 'https://sub.xeton.dev/sub',
                 params=params,
-                timeout=15
+                timeout=10
             )
             
             if response.status_code == 200:
                 data = yaml.safe_load(response.text)
                 if data and 'proxies' in data:
                     nodes = data['proxies']
-                    print(f"   ✅ Got {len(nodes)} nodes via subconverter")
-        except Exception as e:
-            print(f"   ⚠️ Subconverter failed: {e}")
-        
-        # Fallback to direct fetch
-        if not nodes:
+        except:
+            # Try direct fetch as fallback
             try:
-                response = requests.get(url, timeout=10)
-                content = response.text
-                
-                # Try parsing as YAML
-                try:
-                    data = yaml.safe_load(content)
-                    if isinstance(data, dict) and 'proxies' in data:
-                        nodes = data['proxies']
-                        print(f"   ✅ Got {len(nodes)} nodes (direct)")
-                    elif isinstance(data, list):
-                        nodes = data
-                        print(f"   ✅ Got {len(nodes)} nodes (direct)")
-                except:
-                    # Try base64 decode
-                    try:
-                        decoded = base64.b64decode(content).decode('utf-8')
-                        data = yaml.safe_load(decoded)
-                        if isinstance(data, dict) and 'proxies' in data:
-                            nodes = data['proxies']
-                            print(f"   ✅ Got {len(nodes)} nodes (base64)")
-                        elif isinstance(data, list):
-                            nodes = data
-                            print(f"   ✅ Got {len(nodes)} nodes (base64)")
-                    except:
-                        print(f"   ❌ Failed to parse content")
-            except Exception as e:
-                print(f"   ❌ Failed to fetch: {e}")
+                response = requests.get(url, timeout=5)
+                data = yaml.safe_load(response.text)
+                if isinstance(data, dict) and 'proxies' in data:
+                    nodes = data['proxies']
+                elif isinstance(data, list):
+                    nodes = data
+            except:
+                pass
         
-        # Always extend with a list (never None)
-        if nodes and isinstance(nodes, list):
-            all_nodes.extend(nodes)
-        else:
-            print(f"   ⚠️ No valid nodes found")
+        return nodes
+    
+    print(f"\n📥 Fetching {len(urls)} subscriptions in parallel...")
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_url = {executor.submit(fetch_single, url): url for url in urls}
+        
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                nodes = future.result()
+                if nodes:
+                    all_nodes.extend(nodes)
+                    print(f"   ✅ {url[:40]}... : {len(nodes)} nodes")
+                else:
+                    print(f"   ❌ {url[:40]}... : Failed")
+            except Exception as e:
+                print(f"   ❌ {url[:40]}... : {e}")
     
     return all_nodes
 
 def deduplicate_nodes(nodes):
-    """Remove duplicate nodes"""
+    """Fast deduplication"""
     seen = set()
     unique = []
     
@@ -409,35 +394,30 @@ def create_proxy_groups(all_names, sg_names):
     ]
 
 def get_flag_emoji(code):
-    """Get flag emoji for country code"""
+    """Get flag emoji"""
     flags = {
         'SG': '🇸🇬', 'US': '🇺🇸', 'JP': '🇯🇵', 'KR': '🇰🇷', 'HK': '🇭🇰',
         'TW': '🇹🇼', 'CN': '🇨🇳', 'GB': '🇬🇧', 'DE': '🇩🇪', 'FR': '🇫🇷',
         'NL': '🇳🇱', 'CA': '🇨🇦', 'AU': '🇦🇺', 'IN': '🇮🇳', 'TH': '🇹🇭',
         'MY': '🇲🇾', 'ID': '🇮🇩', 'PH': '🇵🇭', 'VN': '🇻🇳', 'TR': '🇹🇷',
         'AE': '🇦🇪', 'RU': '🇷🇺', 'BR': '🇧🇷', 'AR': '🇦🇷', 'MX': '🇲🇽',
-        'IT': '🇮🇹', 'ES': '🇪🇸', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮',
-        'DK': '🇩🇰', 'PL': '🇵🇱', 'UA': '🇺🇦', 'RO': '🇷🇴', 'CZ': '🇨🇿',
-        'IR': '🇮🇷', 'NG': '🇳🇬', 'ZA': '🇿🇦', 'EG': '🇪🇬', 'KE': '🇰🇪',
-        'IL': '🇮🇱', 'SA': '🇸🇦', 'CL': '🇨🇱', 'CO': '🇨🇴', 'PE': '🇵🇪'
+        'IT': '🇮🇹', 'ES': '🇪🇸', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮'
     }
     return flags.get(code.upper(), '🌍')
 
 def main():
-    print("🚀 Clash Aggregator with Clash Core Testing")
+    print("🚀 Fast Clash Aggregator with Optimized Testing")
     print("=" * 50)
     
     # Configuration
-    ENABLE_TESTING = True  # Set to False to skip testing
-    MAX_TEST_NODES = 500   # Limit testing for speed (set to None for all)
+    MAX_TEST_NODES = 1000  # Reasonable limit for speed
     
-    # Download Clash core if needed
-    if ENABLE_TESTING:
-        if not download_clash_core():
-            print("⚠️ Continuing without testing...")
-            ENABLE_TESTING = False
+    # Download Clash if needed
+    if not download_clash_core():
+        print("❌ Cannot proceed without Clash core")
+        return
     
-    # Read subscriptions
+    # Read sources
     try:
         with open('sources.txt', 'r') as f:
             urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
@@ -446,11 +426,11 @@ def main():
         print("❌ Failed to read sources.txt")
         return
     
-    # Fetch all nodes
-    all_nodes = fetch_subscriptions_smart(urls)
+    # Fast parallel fetch
+    all_nodes = fetch_subscriptions_fast(urls)
     
     if not all_nodes:
-        print("❌ No nodes fetched from any subscription")
+        print("❌ No nodes fetched")
         return
     
     print(f"\n📊 Total fetched: {len(all_nodes)} nodes")
@@ -459,59 +439,51 @@ def main():
     all_nodes = deduplicate_nodes(all_nodes)
     print(f"📊 After deduplication: {len(all_nodes)} unique nodes")
     
-    # Test with Clash core if enabled
-    if ENABLE_TESTING and all_nodes:
-        # Limit nodes for testing if configured
-        test_nodes = all_nodes[:MAX_TEST_NODES] if MAX_TEST_NODES else all_nodes
-        
-        if len(test_nodes) < len(all_nodes):
-            print(f"⚠️ Testing limited to first {MAX_TEST_NODES} nodes for speed")
-        
-        tester = ClashTester()
-        tested_nodes = tester.test_batch(test_nodes, batch_size=10, max_workers=3)
-        
-        # Filter only alive nodes
-        alive_nodes = [n for n in tested_nodes if n.get('test_result', {}).get('alive')]
-        
-        # Add untested nodes if we limited testing
-        if MAX_TEST_NODES and len(all_nodes) > MAX_TEST_NODES:
-            untested = all_nodes[MAX_TEST_NODES:]
-            print(f"📝 Adding {len(untested)} untested nodes")
-            alive_nodes.extend(untested)
-    else:
-        # No testing, use all nodes
-        alive_nodes = all_nodes
-        print("⚠️ Skipping proxy testing - geo-location may be inaccurate")
+    # Limit for testing
+    test_nodes = all_nodes[:MAX_TEST_NODES] if MAX_TEST_NODES else all_nodes
+    if len(test_nodes) < len(all_nodes):
+        print(f"⚠️ Testing limited to {MAX_TEST_NODES} nodes for speed")
+    
+    # FAST PRE-FILTER
+    start_time = time.time()
+    alive_nodes = batch_pre_filter(test_nodes)
     
     if not alive_nodes:
-        print("❌ No alive nodes found")
+        print("❌ No alive nodes after pre-filter")
         return
+    
+    # FAST CLASH TEST (only alive nodes)
+    tester = FastClashTester()
+    tested_nodes = tester.test_all_fast(alive_nodes, batch_size=50)
+    
+    # Add untested nodes if any
+    if MAX_TEST_NODES and len(all_nodes) > MAX_TEST_NODES:
+        untested = all_nodes[MAX_TEST_NODES:]
+        print(f"📝 Adding {len(untested)} untested nodes")
+        tested_nodes.extend(untested)
     
     # Group by country
     country_nodes = defaultdict(list)
     
-    for node in alive_nodes:
-        if ENABLE_TESTING and 'test_result' in node:
+    for node in tested_nodes:
+        if 'test_result' in node:
             country = node['test_result'].get('country', 'UN')
         else:
-            # Fallback: guess from server name/domain
-            server = node.get('server', '').lower()
-            if any(sg in server for sg in ['.sg', 'singapore', 'sgp']):
-                country = 'SG'
-            else:
-                country = 'UN'
-        
+            country = 'UN'
         country_nodes[country].append(node)
     
-    # Show distribution
+    # Show results
+    total_time = time.time() - start_time
+    print(f"\n⏱️ Total testing time: {total_time:.1f} seconds")
+    
     print(f"\n📊 Country Distribution:")
     for country, nodes in sorted(country_nodes.items(), key=lambda x: len(x[1]), reverse=True)[:10]:
         flag = get_flag_emoji(country)
         print(f"   {flag} {country}: {len(nodes)} nodes")
     
-    # Process nodes
+    # Process Singapore
     sg_nodes = country_nodes.get('SG', [])
-    print(f"\n🇸🇬 Singapore Nodes: {len(sg_nodes)}")
+    print(f"\n🇸🇬 Singapore Nodes: {len(sg_nodes)} (verified)")
     
     # Rename nodes
     renamed_nodes = []
@@ -522,12 +494,12 @@ def main():
     for idx, node in enumerate(sg_nodes, 1):
         node_name = f"🇸🇬 SG-{idx:03d}"
         node['name'] = node_name
-        node.pop('test_result', None)  # Remove test data
+        node.pop('test_result', None)
         renamed_nodes.append(node)
         sg_node_names.append(node_name)
         all_node_names.append(node_name)
     
-    # Other countries
+    # Others
     for country, nodes in country_nodes.items():
         if country == 'SG':
             continue
@@ -539,10 +511,6 @@ def main():
             node.pop('test_result', None)
             renamed_nodes.append(node)
             all_node_names.append(node_name)
-    
-    if not all_node_names:
-        print("❌ No nodes to output")
-        return
     
     # Create output
     output = {
@@ -562,19 +530,14 @@ def main():
         f.write(f"# Last Update: {update_time}\n")
         f.write(f"# Total Proxies: {len(renamed_nodes)}\n")
         f.write(f"# Singapore Nodes: {len(sg_node_names)}\n")
-        if ENABLE_TESTING:
-            f.write("# Testing: Clash Core (Real Exit Location)\n")
-        else:
-            f.write("# Testing: Disabled (Domain-based guessing)\n")
+        f.write(f"# Testing: Fast Clash Core (Real Exit)\n")
+        f.write(f"# Test Time: {total_time:.1f}s\n")
         f.write("# Generated by Clash-Aggregator\n\n")
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False)
     
-    print(f"\n" + "=" * 50)
-    print(f"✅ Successfully generated clash.yaml")
-    print(f"📊 Summary:")
-    print(f"   Total proxies: {len(renamed_nodes)}")
-    print(f"   Singapore nodes: {len(sg_node_names)}")
-    print(f"🕐 Updated at {update_time}")
+    print(f"\n✅ Successfully generated clash.yaml")
+    print(f"📊 Total: {len(renamed_nodes)} proxies")
+    print(f"🇸🇬 Singapore: {len(sg_node_names)} nodes")
 
 if __name__ == "__main__":
     main()
