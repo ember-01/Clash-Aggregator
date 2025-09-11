@@ -123,47 +123,102 @@ def validate_node(node):
     
     return node
 
-def fetch_quality_sources():
-    """Fetch from sources with real, quality nodes"""
-    all_nodes = []
+def fetch_subscription_resilient(url):
+    """Fetch with multiple fallback methods"""
+    nodes = []
+    raw_nodes = []
     
-    # Sources more likely to have real Singapore nodes
-    quality_sources = [
-        {
-            'url': 'https://raw.githubusercontent.com/peasoft/NoMoreWalls/refs/heads/master/snippets/nodes.meta.yml',
-            'name': 'NoMoreWalls'
-        },
-        {
-            'url': 'https://raw.githubusercontent.com/mahdibland/V2RayAggregator/refs/heads/master/Eternity.yml',
-            'name': 'V2RayAggregator'
-        },
-        {
-            'url': 'https://raw.githubusercontent.com/anaer/Sub/refs/heads/main/clash.yaml',
-            'name': 'anaer'
-        }
+    # Method 1: Subconverter
+    endpoints = [
+        'https://sub.xeton.dev/sub',
+        'https://api.dler.io/sub',
+        'https://sub.id9.cc/sub'
     ]
     
-    print("\n📥 Fetching from quality sources...")
-    
-    for source in quality_sources:
+    for endpoint in endpoints:
         try:
-            response = requests.get(source['url'], timeout=10)
-            data = yaml.safe_load(response.text)
+            params = {
+                'target': 'clash',
+                'url': url,
+                'insert': 'false',
+                'emoji': 'false',
+                'list': 'true'
+            }
             
+            response = requests.get(endpoint, params=params, timeout=10)
+            if response.status_code == 200:
+                data = yaml.safe_load(response.text)
+                if data and 'proxies' in data:
+                    return data['proxies']
+        except:
+            continue
+    
+    # Method 2: Direct fetch
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        content = response.text
+        
+        # Try YAML
+        try:
+            data = yaml.safe_load(content)
             if isinstance(data, dict) and 'proxies' in data:
-                nodes = data['proxies']
-                
-                # Validate each node
-                valid_count = 0
-                for node in nodes:
-                    if validate_node(node):
-                        all_nodes.append(node)
-                        valid_count += 1
-                
-                print(f"   ✅ {source['name']}: {valid_count}/{len(nodes)} valid nodes")
+                return data['proxies']
+            elif isinstance(data, list):
+                return data
+        except:
+            pass
+        
+        # Try base64
+        try:
+            decoded = base64.b64decode(content).decode('utf-8')
+            data = yaml.safe_load(decoded)
+            if isinstance(data, dict) and 'proxies' in data:
+                return data['proxies']
+            elif isinstance(data, list):
+                return data
+        except:
+            pass
             
-        except Exception as e:
-            print(f"   ❌ {source['name']}: {e}")
+        # Try as URL list
+        lines = content.strip().split('\n')
+        for line in lines:
+            if line.startswith(('vmess://', 'ss://', 'trojan://')):
+                # Basic parsing (you can expand this)
+                raw_nodes.append({'type': 'vmess', 'server': 'unknown', 'port': 443, 'name': 'parsed'})
+        
+    except Exception as e:
+        pass
+    
+                # Validate each node
+                for node in raw_nodes:
+                    if validate_node(node):
+                        nodes.append(node)
+
+    return nodes
+
+def fetch_all_subscriptions(urls):
+    """Fetch all subscriptions with better error handling"""
+    all_nodes = []
+    
+    print(f"\n📥 Fetching {len(urls)} subscriptions...")
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_url = {executor.submit(fetch_subscription_resilient, url): url for url in urls}
+        
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                nodes = future.result()
+                if nodes:
+                    all_nodes.extend(nodes)
+                    print(f"   ✅ {url[:50]}... : {len(nodes)} nodes")
+                else:
+                    print(f"   ⚠️ {url[:50]}... : No nodes found")
+            except Exception as e:
+                print(f"   ❌ {url[:50]}... : {e}")
     
     return all_nodes
 
@@ -465,14 +520,23 @@ def main():
         print("❌ Cannot proceed without Clash core")
         return
     
-    # Fetch from quality sources
-    all_nodes = fetch_quality_sources()
-    
-    if not all_nodes:
-        print("❌ No valid nodes found")
+    # Read sources
+    try:
+        with open('sources.txt', 'r') as f:
+            urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        print(f"📋 Found {len(urls)} subscription URLs")
+    except:
+        print("❌ Failed to read sources.txt")
         return
     
-    print(f"\n📊 Total valid nodes: {len(all_nodes)}")
+    # Fetch all subscriptions
+    all_nodes = fetch_all_subscriptions(urls)
+    
+    if not all_nodes:
+        print("❌ No nodes fetched")
+        return
+    
+    print(f"\n📊 Total fetched: {len(all_nodes)} nodes")
     
     # Show sample of servers
     print("\n📝 Sample servers (first 5):")
@@ -490,16 +554,9 @@ def main():
         print("❌ No reachable nodes found")
         return
     
-    # Test with Clash (limit for speed)
-    MAX_TEST = 100
-    test_nodes = reachable_nodes[:MAX_TEST]
-    
-    if len(test_nodes) < len(reachable_nodes):
-        print(f"\n⚠️ Testing limited to first {MAX_TEST} nodes for speed")
-    
     # Test proxies
     tester = ProxyTester()
-    tested_nodes = tester.test_proxies(test_nodes)
+    tested_nodes = tester.test_proxies(reachable_nodes)
     
     # Filter only REAL working proxies (not DIRECT)
     real_proxies = []
