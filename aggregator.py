@@ -192,10 +192,10 @@ def fetch_subscription_resilient(url):
     except Exception as e:
         pass
     
-                # Validate each node
-                for node in raw_nodes:
-                    if validate_node(node):
-                        nodes.append(node)
+    # Validate each node
+    for node in raw_nodes:
+        if validate_node(node):
+            nodes.append(node)
 
     return nodes
 
