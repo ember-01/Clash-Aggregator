@@ -212,11 +212,11 @@ def fetch_all_subscriptions(urls):
                 nodes = future.result()
                 if nodes:
                     all_nodes.extend(nodes)
-                    print(f"\n   ✅ {url[:50]}... : {len(nodes)} nodes")
+                    print(f"\n✅ {url} : {len(nodes)} nodes")
                 else:
-                    print(f"\n   ⚠️ {url[:50]}... : No nodes found")
+                    print(f"\n⚠️ {url} : No nodes found")
             except Exception as e:
-                print(f"\n   ❌ {url[:50]}... : {e}")
+                print(f"\n   ❌ {url} : {e}")
     
     return all_nodes
 
