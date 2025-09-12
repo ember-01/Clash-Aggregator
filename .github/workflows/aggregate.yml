@@ -4,10 +4,10 @@ on:
   schedule:
     - cron: '0 * * * *'  # Every hour
   workflow_dispatch:  # Manual trigger
-  push:
-    paths:
-      - 'sources.txt'
-      - 'aggregator.py'
+#  push:
+#    paths:
+#      - 'sources.txt'
+#      - 'aggregator.py'
 
 permissions:
   contents: write
@@ -31,7 +31,7 @@ jobs:
       run: |
         pip install pyyaml requests pytz geoip2
     
-    - name: Run aggregator with MaxMind
+    - name: Run aggregator with Subconverter + Clash
       env:
         MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       run: python aggregator.py
@@ -41,4 +41,4 @@ jobs:
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add clash.yaml
-        git diff --staged --quiet || (git commit -m "🔄 Update proxies [Subconverter + MaxMind]" && git push)
+        git diff --staged --quiet || (git commit -m "🔄 Update proxies [Subconverter + Clash]" && git push)
