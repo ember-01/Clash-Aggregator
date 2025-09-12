@@ -143,7 +143,7 @@ def fetch_subscription_resilient(url):
                 'list': 'true'
             }
             
-            response = requests.get(endpoint, params=params, timeout=10)
+            response = requests.get(endpoint, params=params, timeout=60)
             if response.status_code == 200:
                 data = yaml.safe_load(response.text)
                 if data and 'proxies' in data:
@@ -156,7 +156,7 @@ def fetch_subscription_resilient(url):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=headers, timeout=60)
         content = response.text
         
         # Try YAML
