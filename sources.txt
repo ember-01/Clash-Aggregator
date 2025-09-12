@@ -2,6 +2,7 @@ https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/meta/mix
 https://raw.githubusercontent.com/qjlxg/aggregator/refs/heads/main/clash.yaml
 https://raw.githubusercontent.com/peasoft/NoMoreWalls/refs/heads/master/snippets/nodes.meta.yml
 https://raw.githubusercontent.com/10ium/V2RayAggregator/master/Eternity.yml
+https://raw.githubusercontent.com/barry-far/V2ray-Config/refs/heads/main/All_Configs_Sub.txt
 https://raw.githubusercontent.com/mahdibland/V2RayAggregator/refs/heads/master/Eternity.yml
 https://raw.githubusercontent.com/10ium/ClashFactory/refs/heads/main/providers/10ium-HiN-VPN.txt
 https://raw.githubusercontent.com/10ium/ClashFactory/refs/heads/main/providers/10ium-config-fetcher.txt
