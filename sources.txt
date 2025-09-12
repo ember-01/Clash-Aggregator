@@ -12,7 +12,6 @@ https://raw.githubusercontent.com/dongchengjie/airport/main/subs/merged/tested_w
 https://raw.githubusercontent.com/anaer/Sub/refs/heads/main/clash.yaml
 https://raw.githubusercontent.com/MEHR1DAD/V2RayAggregator/refs/heads/master/subscription/SG_sub_100.txt
 https://raw.githubusercontent.com/arshiacomplus/v2rayExtractor/refs/heads/main/mix/sub.html
-https://raw.githubusercontent.com/itsyebekhe/PSG/refs/heads/main/subscriptions/meta/mix
 https://script.google.com/macros/s/AKfycbxep7yD3saE4ZKCwmDRtuTFyQxKZv0BSUSwmwGUWNQZpXYb6WNe7cjWCdOWWnUHKR4NUQ/exec
 https://v2.alicivil.workers.dev
 https://raw.githubusercontent.com/10ium/telegram-configs-collector/refs/heads/main/splitted/mixed
