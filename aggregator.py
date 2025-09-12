@@ -23,8 +23,6 @@ def download_clash_core():
         print("✅ Clash core found")
         return True
     
-    print("📥 Downloading Clash core...")
-    
     urls = [
         "https://github.com/MetaCubeX/mihomo/releases/download/v1.18.0/mihomo-linux-amd64-v1.18.0.gz",
         "https://github.com/Dreamacro/clash/releases/download/v1.18.0/clash-linux-amd64-v1.18.0.gz"
@@ -214,11 +212,11 @@ def fetch_all_subscriptions(urls):
                 nodes = future.result()
                 if nodes:
                     all_nodes.extend(nodes)
-                    print(f"   ✅ {url[:50]}... : {len(nodes)} nodes")
+                    print(f"\n   ✅ {url[:50]}... : {len(nodes)} nodes")
                 else:
-                    print(f"   ⚠️ {url[:50]}... : No nodes found")
+                    print(f"\n   ⚠️ {url[:50]}... : No nodes found")
             except Exception as e:
-                print(f"   ❌ {url[:50]}... : {e}")
+                print(f"\n   ❌ {url[:50]}... : {e}")
     
     return all_nodes
 
@@ -256,9 +254,6 @@ def pre_filter_nodes(nodes, max_workers=50):
         for future in concurrent.futures.as_completed(future_to_node):
             completed += 1
             node = future_to_node[future]
-            
-            if completed % 50 == 0:
-                print(f"   Progress: {completed}/{len(nodes)} ({len(reachable)} reachable)")
             
             try:
                 if future.result():
@@ -302,7 +297,6 @@ class ProxyTester:
             batch_num = (i // batch_size) + 1
             total_batches = (len(nodes) + batch_size - 1) // batch_size
             
-            print(f"\n📦 Batch {batch_num}/{total_batches} ({len(batch)} nodes)...")
             batch_results = self._test_batch(batch, self.base_port + batch_num)
             results.extend(batch_results)
         
@@ -351,11 +345,6 @@ class ProxyTester:
                 node['test_result'] = result
                 results.append(node)
                 
-                # Show progress for working proxies
-                if result['is_proxy']:
-                    flag = '🇸🇬' if result['country'] == 'SG' else '🌍'
-                    print(f"   ✅ {flag} {result['country']}: {node.get('server')[:30]}")
-        
         finally:
             if process:
                 process.terminate()
@@ -515,12 +504,9 @@ def get_flag_emoji(code):
         'CW': '🇨🇼', 'DO': '🇩🇴', 'PA': '🇵🇦', 'CR': '🇨🇷', 'UY': '🇺🇾',
         'IR': '🇮🇷', 'KE': '🇰🇪', 'NG': '🇳🇬', 'TN': '🇹🇳', 'LY': '🇱🇾'
     }
-    return flags.get(code.upper(), '🌍')
+    return flags.get(code.upper(), '❓')
 
 def main():
-    print("🚀 Fixed Clash Aggregator - Real Proxy Detection")
-    print("=" * 50)
-    
     start_time = time.time()
     
     # Download Clash if needed
@@ -545,11 +531,6 @@ def main():
         return
     
     print(f"\n📊 Total fetched: {len(all_nodes)} nodes")
-    
-    # Show sample of servers
-    print("\n📝 Sample servers (first 5):")
-    for node in all_nodes[:5]:
-        print(f"   - {node.get('server')}: {node.get('type')} port {node.get('port')}")
     
     # Deduplicate
     all_nodes = deduplicate_nodes(all_nodes)
@@ -595,19 +576,12 @@ def main():
     
     # Show distribution
     print(f"\n🌍 Country Distribution (REAL proxies only):")
+    sg_nodes = country_nodes.get('SG', [])
+    print(f"\n🇸🇬 SG: {len(sg_nodes)} nodes")
+    
     for country, nodes in sorted(country_nodes.items(), key=lambda x: len(x[1]), reverse=True):
         flag = get_flag_emoji(country)
         print(f"   {flag} {country}: {len(nodes)} nodes")
-    
-    # Singapore nodes
-    sg_nodes = country_nodes.get('SG', [])
-    print(f"\n🇸🇬 Singapore Nodes: {len(sg_nodes)}")
-    
-    if sg_nodes:
-        print("   Sample SG nodes:")
-        for node in sg_nodes[:3]:
-            result = node['test_result']
-            print(f"   - {node.get('server')}: {result.get('city')} ({result.get('isp')})")
     
     # Rename nodes
     renamed_nodes = []
