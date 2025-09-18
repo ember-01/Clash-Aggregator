@@ -455,14 +455,14 @@ def create_proxy_groups(all_names, sg_names):
             'name': '🌏 ⚡',
             'type': 'url-test',
             'proxies': all_names,
-            'url': 'http://clients3.google.com/generate_204',
+            'url': 'https://www.gstatic.com/generate_204',
             'interval': 300
         },
         {
             'name': '🇸🇬 ⚡',
             'type': 'url-test',
             'proxies': sg_names if sg_names else ['DIRECT'],
-            'url': 'http://clients3.google.com/generate_204',
+            'url': 'https://www.gstatic.com/generate_204',
             'interval': 300
         },
         {
@@ -470,7 +470,7 @@ def create_proxy_groups(all_names, sg_names):
             'type': 'load-balance',
             'proxies': all_names,
             'strategy': 'round-robin',
-            'url': 'http://clients3.google.com/generate_204',
+            'url': 'https://www.gstatic.com/generate_204',
             'interval': 300
         },
         {
@@ -478,7 +478,7 @@ def create_proxy_groups(all_names, sg_names):
             'type': 'load-balance',
             'proxies': sg_names if sg_names else ['DIRECT'],
             'strategy': 'round-robin',
-            'url': 'http://clients3.google.com/generate_204',
+            'url': 'https://www.gstatic.com/generate_204',
             'interval': 300
         }
     ]
