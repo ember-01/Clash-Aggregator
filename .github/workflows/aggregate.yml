@@ -2,7 +2,7 @@ name: Aggregate Clash Subscriptions
 
 on:
   schedule:
-    - cron: '30 */2 * * *'  # Every hour
+    - cron: '30 */2 * * *'  # 30 mins past of rvery 2 hour
   workflow_dispatch:  # Manual trigger
 #  push:
 #    paths:
