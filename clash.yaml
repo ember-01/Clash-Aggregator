@@ -1,4 +1,4 @@
-# Last Update: 2026-03-28 17:32:37 MMT
+# Last Update: 2026-03-28 20:07:09 MMT
 # Total Proxies: 372 (REAL working proxies)
 # Singapore Nodes: 9
 # Note: All proxies verified working (not DIRECT)
@@ -11,46 +11,58 @@ proxies:
   port: 8080
   server: 68.183.227.4
   type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇸🇬 SG-002
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 38.89.142.56
-  type: ss
 - alterId: 0
   cipher: auto
-  name: 🇸🇬 SG-003
+  name: 🇸🇬 SG-002
   port: 30812
   server: v12.hdacd.com
   skip-cert-verify: true
   tls: false
   type: vmess
+  udp: true
   uuid: cbb3f877-d1fb-344c-87a9-d153bffd5484
 - cipher: chacha20-ietf-poly1305
-  name: 🇸🇬 SG-004
+  name: 🇸🇬 SG-003
   password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
   port: 990
   server: 95.173.218.203
   type: ss
 - cipher: rc4-md5
+  name: 🇸🇬 SG-004
+  password: 14fFPrbezE3HDZzsMOr6
+  port: 8080
+  server: 68.183.227.236
+  type: ss
+- cipher: rc4-md5
   name: 🇸🇬 SG-005
   password: 14fFPrbezE3HDZzsMOr6
   port: 8080
-  server: 68.183.235.122
+  server: 128.199.172.224
   type: ss
 - cipher: rc4-md5
   name: 🇸🇬 SG-006
   password: 14fFPrbezE3HDZzsMOr6
   port: 8080
-  server: 128.199.172.224
+  server: 68.183.235.122
   type: ss
-- cipher: aes-256-gcm
+- alterId: 0
+  cipher: auto
   name: 🇸🇬 SG-007
+  network: ws
+  port: 8880
+  server: 35.240.225.23
+  tls: false
+  type: vmess
+  uuid: c5dd6680-64ad-4f04-9952-49d94984f9eb
+  ws-opts:
+    path: /
+- cipher: aes-256-gcm
+  name: 🇸🇬 SG-008
   password: 8t2xeemUtyui4zAv
   port: 80
   server: 194.233.94.119
   type: ss
-- name: 🇸🇬 SG-008
+- name: 🇸🇬 SG-009
   network: ws
   password: 13c169be-8592-4eaa-94cb-69c859e7d987
   port: 443
@@ -63,15 +75,308 @@ proxies:
     path: /trojan-ws
 - alterId: 0
   cipher: auto
-  name: 🇸🇬 SG-009
+  name: 🇺🇸 US-001
   network: ws
-  port: 8880
-  server: 35.240.225.23
+  port: 443
+  server: 209.126.84.189
+  skip-cert-verify: true
   tls: false
   type: vmess
-  uuid: c5dd6680-64ad-4f04-9952-49d94984f9eb
+  uuid: 2c981164-9b93-4bca-94ff-b78d3f8498d7
   ws-opts:
+    headers:
+      Host: 209.126.84.189
+    path: /vmessws
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-002
+  password: shadowsocks
+  port: 443
+  server: 173.244.56.6
+  type: ss
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-003
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.169
+  type: ss
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-004
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.167
+  type: ss
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-005
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.170
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇺🇸 US-006
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 173.234.29.2
+  type: ss
+- name: 🇺🇸 US-007
+  password: de7d6444-a7a8-4b3a-bf26-bc6939bb0279
+  port: 443
+  server: n1.chateditimage.com
+  skip-cert-verify: false
+  sni: n1.chateditimage.com
+  type: trojan
+- name: 🇺🇸 US-008
+  password: 4123ae62-0999-4984-8ead-091630e594a9
+  port: 443
+  server: n2.chateditimage.com
+  skip-cert-verify: false
+  sni: n2.chateditimage.com
+  type: trojan
+- name: 🇺🇸 US-009
+  password: de7d6444-a7a8-4b3a-bf26-bc6939bb0279
+  port: 443
+  server: n3.chateditimage.com
+  skip-cert-verify: false
+  sni: n3.chateditimage.com
+  type: trojan
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-010
+  password: shadowsocks
+  port: 443
+  server: 37.19.198.236
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇺🇸 US-011
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 104.192.226.106
+  type: ss
+- name: 🇺🇸 US-012
+  password: 6d29eb2f74293cb01a19b32cf08ad2e9
+  port: 3700
+  server: 160.16.70.180
+  skip-cert-verify: false
+  sni: www.nintendogames.net
+  type: trojan
+- cipher: aes-256-gcm
+  name: 🇺🇸 US-013
+  password: 8JCsPssfgS8tiRwiMlhARg==
+  port: 12000
+  server: 144.217.164.29
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇺🇸 US-014
+  password: hbGrpfvNrJsUmKmPbR3iY2
+  port: 443
+  server: tinkered-pennies-puppies.freesocks.work
+  type: ss
+- alterId: 0
+  cipher: auto
+  name: 🇺🇸 US-015
+  port: 14102
+  server: 172.233.229.91
+  skip-cert-verify: false
+  tls: false
+  type: vmess
+  udp: true
+  uuid: 27ba87fc-583f-4763-9060-83cf0b9264db
+- alterId: 0
+  cipher: auto
+  name: 🇺🇸 US-016
+  port: 443
+  server: 165.140.216.141
+  skip-cert-verify: true
+  tls: false
+  type: vmess
+  uuid: e7d72a8d-26f2-4b54-b366-0c43e0bcba7d
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-017
+  password: shadowsocks
+  port: 443
+  server: 37.19.198.243
+  type: ss
+- cipher: aes-128-gcm
+  name: 🇺🇸 US-018
+  password: shadowsocks
+  port: 443
+  server: 37.19.198.160
+  type: ss
+- name: 🇺🇸 US-019
+  network: ws
+  password: trojan
+  port: 28080
+  server: 38.83.41.89
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  udp: true
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
     path: /
+- name: 🇺🇸 US-020
+  network: ws
+  password: trojan
+  port: 443
+  server: 154.194.0.101
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- cipher: chacha20-ietf-poly1305
+  name: 🇺🇸 US-021
+  password: hbGrpfvNrJsUmKmPbR3iY2
+  port: 443
+  server: 38.135.24.131
+  type: ss
+- name: 🇺🇸 US-022
+  network: ws
+  password: 6202b230-417c-4d8e-b624-0f71afa9c75d
+  port: 443
+  server: bestcf.030101.xyz
+  skip-cert-verify: true
+  sni: sni.111000.dynv6.net
+  type: trojan
+  ws-opts:
+    headers:
+      Host: sni.111000.dynv6.net
+    path: /?ed=2560&proxyip=ip.111000.de5.net:443
+- cipher: aes-256-gcm
+  name: 🇺🇸 US-023
+  password: ZfbPFDdeBj0B1Txs
+  port: 80
+  server: 154.53.60.212
+  type: ss
+- cipher: aes-256-gcm
+  name: 🇺🇸 US-024
+  password: QzM0NfuMNngbVnZK
+  port: 443
+  server: 144.126.145.77
+  type: ss
+- cipher: none
+  name: 🇺🇸 US-025
+  password: 3e96ef7d-8637-42c2-ac73-75182196e755
+  plugin: v2ray-plugin
+  plugin-opts:
+    host: mfvpn.fuchen.indevs.in
+    mode: websocket
+    mux: false
+    path: /3e96ef7d-8637-42c2-ac73-75182196e755/?ed=2560
+    tls: true
+  port: 443
+  server: store.ubi.com
+  type: ss
+  udp: true
+- name: 🇺🇸 US-026
+  password: WF42809561
+  port: 443
+  server: merry-falcon.rooster465.autos
+  sni: merry-falcon.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-027
+  password: WF42809561
+  port: 443
+  server: climbing-frog.rooster465.autos
+  sni: climbing-frog.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-028
+  password: WF42809561
+  port: 443
+  server: closing-sailfish.rooster465.autos
+  sni: closing-sailfish.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-029
+  password: WF42809561
+  port: 443
+  server: lucky-marmot.rooster465.autos
+  sni: lucky-marmot.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-030
+  password: WF42809561
+  port: 443
+  server: moved-osprey.rooster465.autos
+  sni: moved-osprey.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-031
+  password: WF42809561
+  port: 443
+  server: proud-pheasant.rooster465.autos
+  sni: proud-pheasant.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-032
+  password: WF42809561
+  port: 443
+  server: moral-buzzard.rooster465.autos
+  sni: moral-buzzard.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-033
+  password: WF42809561
+  port: 443
+  server: wired-tick.rooster465.autos
+  sni: wired-tick.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-034
+  password: WF42809561
+  port: 443
+  server: closing-crow.rooster465.autos
+  sni: closing-crow.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-035
+  password: WF42809561
+  port: 443
+  server: darling-emu.rooster465.autos
+  sni: darling-emu.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-036
+  network: ws
+  password: trojan
+  port: 28006
+  server: 38.83.41.89
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇺🇸 US-037
+  password: WF42809561
+  port: 443
+  server: arriving-hyena.rooster465.autos
+  sni: arriving-hyena.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-038
+  password: WF42809561
+  port: 443
+  server: enabling-snipe.rooster465.autos
+  sni: enabling-snipe.rooster465.autos
+  type: trojan
+- name: 🇺🇸 US-039
+  network: ws
+  password: trojan
+  port: 54321
+  server: 154.12.53.125
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇺🇸 US-040
+  network: ws
+  password: 6202b230-417c-4d8e-b624-0f71afa9c75d
+  port: 443
+  server: jp.111000.cc.cd
+  skip-cert-verify: false
+  sni: sni.111000.dynv6.net
+  type: trojan
+  ws-opts:
+    headers:
+      Host: sni.111000.dynv6.net
+    path: /?ed=2560&proxyip=ip.111000.de5.net:443
 - cipher: chacha20-ietf-poly1305
   name: 🇨🇦 CA-001
   password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
@@ -102,31 +407,13 @@ proxies:
   port: 990
   server: 45.154.204.7
   type: ss
-- cipher: aes-128-gcm
-  name: 🇨🇦 CA-006
-  password: shadowsocks
-  port: 443
-  server: 149.22.95.183
-  type: ss
-- name: 🇨🇦 CA-007
-  network: ws
-  password: trojan
-  port: 9527
-  server: 217.197.97.121
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
 - cipher: chacha20-ietf-poly1305
-  name: 🇨🇦 CA-008
+  name: 🇨🇦 CA-006
   password: 7a106afc33eaa261
   port: 46534
   server: 148.113.139.160
   type: ss
-- name: 🇨🇦 CA-009
+- name: 🇨🇦 CA-007
   network: ws
   password: trojan
   port: 8989
@@ -139,304 +426,11 @@ proxies:
       Host: jflsjlaf.pages.dev
     path: /
 - cipher: aes-128-gcm
-  name: 🇺🇸 US-001
+  name: 🇨🇦 CA-008
   password: shadowsocks
   port: 443
-  server: 156.146.38.169
+  server: 149.22.95.183
   type: ss
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-002
-  password: shadowsocks
-  port: 443
-  server: 173.244.56.6
-  type: ss
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-003
-  password: shadowsocks
-  port: 443
-  server: 156.146.38.167
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇺🇸 US-004
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 173.234.29.2
-  type: ss
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-005
-  password: shadowsocks
-  port: 443
-  server: 156.146.38.170
-  type: ss
-- alterId: 0
-  cipher: auto
-  name: 🇺🇸 US-006
-  network: ws
-  port: 443
-  server: 209.126.84.189
-  skip-cert-verify: true
-  tls: false
-  type: vmess
-  uuid: 2c981164-9b93-4bca-94ff-b78d3f8498d7
-  ws-opts:
-    headers:
-      Host: 209.126.84.189
-    path: /vmessws
-- name: 🇺🇸 US-007
-  password: de7d6444-a7a8-4b3a-bf26-bc6939bb0279
-  port: 443
-  server: n3.chateditimage.com
-  skip-cert-verify: false
-  sni: n3.chateditimage.com
-  type: trojan
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-008
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.236
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇺🇸 US-009
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 104.192.226.106
-  type: ss
-- name: 🇺🇸 US-010
-  password: 6d29eb2f74293cb01a19b32cf08ad2e9
-  port: 3700
-  server: 160.16.70.180
-  skip-cert-verify: false
-  sni: www.nintendogames.net
-  type: trojan
-- cipher: aes-256-gcm
-  name: 🇺🇸 US-011
-  password: 8JCsPssfgS8tiRwiMlhARg==
-  port: 12000
-  server: 144.217.164.29
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇺🇸 US-012
-  password: hbGrpfvNrJsUmKmPbR3iY2
-  port: 443
-  server: tinkered-pennies-puppies.freesocks.work
-  type: ss
-- alterId: 0
-  cipher: auto
-  name: 🇺🇸 US-013
-  port: 14102
-  server: 172.233.229.91
-  skip-cert-verify: false
-  tls: false
-  type: vmess
-  udp: true
-  uuid: 27ba87fc-583f-4763-9060-83cf0b9264db
-- alterId: 0
-  cipher: auto
-  name: 🇺🇸 US-014
-  port: 443
-  server: 165.140.216.141
-  skip-cert-verify: true
-  tls: false
-  type: vmess
-  uuid: e7d72a8d-26f2-4b54-b366-0c43e0bcba7d
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-015
-  password: shadowsocks
-  port: 443
-  server: 156.146.38.168
-  type: ss
-- cipher: aes-256-gcm
-  name: 🇺🇸 US-016
-  password: ZfbPFDdeBj0B1Txs
-  port: 80
-  server: 154.53.60.212
-  type: ss
-- name: 🇺🇸 US-017
-  network: ws
-  password: trojan
-  port: 443
-  server: 154.194.0.101
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- cipher: aes-256-gcm
-  name: 🇺🇸 US-018
-  password: QzM0NfuMNngbVnZK
-  port: 443
-  server: 144.126.145.77
-  type: ss
-- name: 🇺🇸 US-019
-  network: ws
-  password: trojan
-  port: 50000
-  server: 38.60.89.136
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇺🇸 US-020
-  network: ws
-  password: 6202b230-417c-4d8e-b624-0f71afa9c75d
-  port: 443
-  server: bestcf.030101.xyz
-  skip-cert-verify: true
-  sni: sni.111000.dynv6.net
-  type: trojan
-  ws-opts:
-    headers:
-      Host: sni.111000.dynv6.net
-    path: /?ed=2560&proxyip=ip.111000.de5.net:443
-- name: 🇺🇸 US-021
-  password: WF42809561
-  port: 443
-  server: proud-pheasant.rooster465.autos
-  sni: proud-pheasant.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-022
-  password: WF42809561
-  port: 443
-  server: alert-sunbird.crayfish192.xyz
-  sni: alert-sunbird.crayfish192.xyz
-  type: trojan
-- name: 🇺🇸 US-023
-  password: WF42809561
-  port: 443
-  server: wired-tick.rooster465.autos
-  sni: wired-tick.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-024
-  password: WF42809561
-  port: 443
-  server: lucky-marmot.rooster465.autos
-  sni: lucky-marmot.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-025
-  password: WF42809561
-  port: 443
-  server: moral-buzzard.rooster465.autos
-  sni: moral-buzzard.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-026
-  password: WF42809561
-  port: 443
-  server: enabling-snipe.rooster465.autos
-  sni: enabling-snipe.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-027
-  password: WF42809561
-  port: 443
-  server: closing-sailfish.rooster465.autos
-  sni: closing-sailfish.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-028
-  password: WF42809561
-  port: 443
-  server: climbing-frog.rooster465.autos
-  sni: climbing-frog.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-029
-  password: WF42809561
-  port: 443
-  server: merry-falcon.rooster465.autos
-  sni: merry-falcon.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-030
-  password: WF42809561
-  port: 443
-  server: arriving-hyena.rooster465.autos
-  sni: arriving-hyena.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-031
-  password: WF42809561
-  port: 443
-  server: moved-osprey.rooster465.autos
-  sni: moved-osprey.rooster465.autos
-  type: trojan
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-032
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.244
-  type: ss
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-033
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.160
-  type: ss
-- cipher: aes-128-gcm
-  name: 🇺🇸 US-034
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.243
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇺🇸 US-035
-  password: hbGrpfvNrJsUmKmPbR3iY2
-  port: 443
-  server: 38.135.24.131
-  type: ss
-- name: 🇺🇸 US-036
-  network: ws
-  password: trojan
-  port: 28080
-  server: 38.83.41.89
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇺🇸 US-037
-  password: WF42809561
-  port: 443
-  server: closing-crow.rooster465.autos
-  sni: closing-crow.rooster465.autos
-  type: trojan
-- name: 🇺🇸 US-038
-  network: ws
-  password: trojan
-  port: 28006
-  server: 38.83.41.89
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇺🇸 US-039
-  network: ws
-  password: trojan
-  port: 54321
-  server: 154.12.53.125
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇺🇸 US-040
-  network: ws
-  password: 6202b230-417c-4d8e-b624-0f71afa9c75d
-  port: 443
-  server: jp.111000.cc.cd
-  skip-cert-verify: false
-  sni: sni.111000.dynv6.net
-  type: trojan
-  ws-opts:
-    headers:
-      Host: sni.111000.dynv6.net
-    path: /?ed=2560&proxyip=ip.111000.de5.net:443
 - alterId: 0
   cipher: auto
   name: 🇩🇪 DE-001
@@ -447,22 +441,24 @@ proxies:
   type: vmess
   uuid: ede27a79-b039-490b-932c-495de4b68880
 - name: 🇩🇪 DE-002
+  password: c931310e-a5e7-11f0-bf66-f23c9164ca5d
+  port: 443
+  server: f755b173-tcb5s0-tcjoyq-2cg3.de.oshuawei.com
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: c931310e-a5e7-11f0-bf66-f23c9164ca5d
+- name: 🇩🇪 DE-003
   password: WF42809561
   port: 443
-  server: classic-duckling.rooster465.autos
-  sni: classic-duckling.rooster465.autos
+  server: aware-pika.rooster465.autos
+  sni: aware-pika.rooster465.autos
   type: trojan
-- cipher: chacha20-ietf-poly1305
-  name: 🇩🇪 DE-003
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 38.60.250.107
-  type: ss
 - name: 🇩🇪 DE-004
   password: WF42809561
   port: 443
-  server: dynamic-tiger.crayfish192.xyz
-  sni: dynamic-tiger.crayfish192.xyz
+  server: liked-eft.rooster465.autos
+  sni: liked-eft.rooster465.autos
   type: trojan
 - name: 🇩🇪 DE-005
   password: WF42809561
@@ -473,8 +469,8 @@ proxies:
 - name: 🇩🇪 DE-006
   password: WF42809561
   port: 443
-  server: liked-eft.rooster465.autos
-  sni: liked-eft.rooster465.autos
+  server: dynamic-tiger.crayfish192.xyz
+  sni: dynamic-tiger.crayfish192.xyz
   type: trojan
 - name: 🇩🇪 DE-007
   password: WF42809561
@@ -485,20 +481,20 @@ proxies:
 - name: 🇩🇪 DE-008
   password: WF42809561
   port: 443
-  server: aware-pika.rooster465.autos
-  sni: aware-pika.rooster465.autos
+  server: central-jawfish.rooster465.autos
+  sni: central-jawfish.rooster465.autos
   type: trojan
 - name: 🇩🇪 DE-009
   password: WF42809561
   port: 443
-  server: major-gnat.crayfish192.xyz
-  sni: major-gnat.crayfish192.xyz
+  server: classic-duckling.rooster465.autos
+  sni: classic-duckling.rooster465.autos
   type: trojan
 - name: 🇩🇪 DE-010
   password: WF42809561
   port: 443
-  server: central-jawfish.rooster465.autos
-  sni: central-jawfish.rooster465.autos
+  server: major-gnat.crayfish192.xyz
+  sni: major-gnat.crayfish192.xyz
   type: trojan
 - name: 🇩🇪 DE-011
   network: ws
@@ -515,8 +511,8 @@ proxies:
 - name: 🇩🇪 DE-012
   network: ws
   password: trojan
-  port: 8444
-  server: 212.23.200.10
+  port: 6780
+  server: 91.107.249.251
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -527,8 +523,8 @@ proxies:
 - name: 🇩🇪 DE-013
   network: ws
   password: trojan
-  port: 2052
-  server: 91.107.250.73
+  port: 8444
+  server: 89.58.34.93
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -539,8 +535,8 @@ proxies:
 - name: 🇩🇪 DE-014
   network: ws
   password: trojan
-  port: 6780
-  server: 91.107.249.251
+  port: 2052
+  server: 91.107.250.73
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -572,31 +568,13 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇩🇪 DE-017
-  network: ws
-  password: trojan
-  port: 8444
-  server: 89.58.34.93
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
+- cipher: chacha20-ietf-poly1305
+  name: 🇩🇪 DE-017
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 38.60.250.107
+  type: ss
 - name: 🇩🇪 DE-018
-  network: ws
-  password: trojan
-  port: 8444
-  server: 45.144.48.48
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇩🇪 DE-019
   network: ws
   password: trojan
   port: 8444
@@ -608,7 +586,7 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇩🇪 DE-020
+- name: 🇩🇪 DE-019
   network: ws
   password: trojan
   port: 442
@@ -620,6 +598,24 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
+- name: 🇩🇪 DE-020
+  network: ws
+  password: trojan
+  port: 2525
+  server: 46.62.132.84
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- cipher: chacha20-ietf-poly1305
+  name: 🇪🇨 EC-001
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 38.165.231.25
+  type: ss
 - name: 🇵🇱 PL-001
   password: IL37892054
   port: 443
@@ -649,30 +645,24 @@ proxies:
   skip-cert-verify: false
   sni: top-goshawk.rooster465.autos
   type: trojan
-- cipher: aes-256-cfb
-  name: 🇵🇱 PL-005
-  password: BNmAXXxAHYpTRdzu
-  port: 9020
-  server: 217.30.10.70
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇵🇱 PL-006
-  password: FAdUvMJUq5vDgKEq
-  port: 9006
-  server: 217.30.10.70
-  type: ss
-- name: 🇵🇱 PL-007
+- name: 🇵🇱 PL-005
   password: WF42809561
   port: 443
   server: excited-squirrel.rooster465.autos
   sni: excited-squirrel.rooster465.autos
   type: trojan
-- cipher: chacha20-ietf-poly1305
-  name: 🇪🇨 EC-001
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 38.165.231.25
-  type: ss
+- name: 🇵🇱 PL-006
+  network: ws
+  password: trojan
+  port: 8444
+  server: 45.144.48.48
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
 - name: 🇭🇰 HK-001
   password: BxceQaOe
   port: 1850
@@ -719,22 +709,22 @@ proxies:
   ws-opts:
     path: /
 - name: 🇭🇰 HK-006
-  password: WF42809561
+  password: IL37892054
   port: 443
-  server: right-seahorse.rooster465.autos
-  sni: right-seahorse.rooster465.autos
+  server: caring-ghoul.rooster465.autos
+  sni: caring-ghoul.rooster465.autos
   type: trojan
 - name: 🇭🇰 HK-007
   password: WF42809561
   port: 443
-  server: emerging-hagfish.rooster465.autos
-  sni: emerging-hagfish.rooster465.autos
+  server: ready-monarch.rooster465.autos
+  sni: ready-monarch.rooster465.autos
   type: trojan
 - name: 🇭🇰 HK-008
   password: WF42809561
   port: 443
-  server: loyal-killdeer.rooster465.autos
-  sni: loyal-killdeer.rooster465.autos
+  server: right-seahorse.rooster465.autos
+  sni: right-seahorse.rooster465.autos
   type: trojan
 - name: 🇭🇰 HK-009
   password: WF42809561
@@ -742,51 +732,17 @@ proxies:
   server: picked-hippo.rooster465.autos
   sni: picked-hippo.rooster465.autos
   type: trojan
-- name: 🇭🇰 HK-010
-  password: WF42809561
-  port: 443
-  server: ready-monarch.rooster465.autos
-  sni: ready-monarch.rooster465.autos
-  type: trojan
-- name: 🇦🇺 AU-001
-  password: IL37892054
-  port: 443
-  server: enhanced-crayfish.rooster465.autos
-  skip-cert-verify: false
-  sni: enhanced-crayfish.rooster465.autos
-  type: trojan
-  udp: true
-- name: 🇦🇺 AU-002
-  password: IL37892054
-  port: 443
-  server: steady-lemming.rooster465.autos
-  skip-cert-verify: false
-  sni: steady-lemming.rooster465.autos
-  type: trojan
-- name: 🇦🇺 AU-003
-  password: WF42809561
-  port: 443
-  server: evolving-kangaroo.rooster465.autos
-  skip-cert-verify: false
-  sni: evolving-kangaroo.rooster465.autos
-  type: trojan
-- name: 🇦🇺 AU-004
-  password: WF42809561
-  port: 443
-  server: premium-lab.rooster465.autos
-  sni: premium-lab.rooster465.autos
-  type: trojan
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-001
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  port: 8080
-  server: 82.38.31.82
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-002
   password: 4a2rfixophdjffa8KVA4Aa
   port: 8080
   server: 193.29.139.157
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-002
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  port: 8080
+  server: 82.38.31.82
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-003
@@ -804,13 +760,13 @@ proxies:
   name: 🇳🇱 NL-005
   password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
-  server: 82.38.31.194
+  server: 82.38.31.210
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-006
   password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
-  server: 82.38.31.210
+  server: 82.38.31.194
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-007
@@ -820,9 +776,9 @@ proxies:
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-008
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   port: 8080
-  server: 82.38.31.217
+  server: 82.38.31.99
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-009
@@ -838,15 +794,15 @@ proxies:
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-011
-  password: oZIoA69Q8yhcQV8ka3Pa3A
+  password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
-  server: 82.38.31.99
+  server: 82.38.31.217
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-012
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   port: 8080
-  server: 82.38.31.176
+  server: 193.29.139.141
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-013
@@ -858,7 +814,7 @@ proxies:
   name: 🇳🇱 NL-014
   password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
-  server: 82.38.31.199
+  server: 82.38.31.176
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-015
@@ -868,15 +824,15 @@ proxies:
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-016
-  password: oZIoA69Q8yhcQV8ka3Pa3A
+  password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
-  server: 193.29.139.202
+  server: 82.38.31.199
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-017
   password: oZIoA69Q8yhcQV8ka3Pa3A
   port: 8080
-  server: 193.29.139.141
+  server: 193.29.139.202
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-018
@@ -908,35 +864,35 @@ proxies:
   port: 8080
   server: 193.29.139.227
   type: ss
-- cipher: aes-256-cfb
-  name: 🇳🇱 NL-023
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 51.15.17.169
-  type: ss
-- cipher: aes-128-cfb
-  name: 🇳🇱 NL-024
-  password: shadowsocks
-  port: 443
-  server: 109.201.152.181
-  type: ss
 - cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-025
+  name: 🇳🇱 NL-023
   password: k1dBOmOB4oqi7Ump37a1bQ
   port: 8080
   server: 82.38.31.187
   type: ss
 - cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-026
+  name: 🇳🇱 NL-024
   password: oZIoA69Q8yhcQV8ka3Pa3A
   port: 8080
-  server: 82.38.31.35
+  server: 82.38.31.101
+  type: ss
+- cipher: aes-128-cfb
+  name: 🇳🇱 NL-025
+  password: shadowsocks
+  port: 443
+  server: 109.201.152.181
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇳🇱 NL-026
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 51.15.17.169
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-027
   password: oZIoA69Q8yhcQV8ka3Pa3A
   port: 8080
-  server: 82.38.31.101
+  server: 82.38.31.35
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-028
@@ -953,16 +909,16 @@ proxies:
 - name: 🇳🇱 NL-030
   password: WF42809561
   port: 443
-  server: touching-pigeon.rooster465.autos
+  server: model-stingray.crayfish192.xyz
   skip-cert-verify: false
-  sni: touching-pigeon.rooster465.autos
+  sni: model-stingray.crayfish192.xyz
   type: trojan
 - name: 🇳🇱 NL-031
   password: WF42809561
   port: 443
-  server: model-stingray.crayfish192.xyz
+  server: touching-pigeon.rooster465.autos
   skip-cert-verify: false
-  sni: model-stingray.crayfish192.xyz
+  sni: touching-pigeon.rooster465.autos
   type: trojan
 - cipher: chacha20-ietf-poly1305
   name: 🇳🇱 NL-032
@@ -988,43 +944,33 @@ proxies:
   port: 8080
   server: 193.29.139.179
   type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-036
-  password: 1RWwXhwfAB5gAEozU4G2Pg
-  port: 8080
-  server: 193.29.139.175
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-037
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  port: 8080
-  server: 193.29.139.151
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-038
-  password: QCXDxuDlTTMD7jtgHUjIoj
-  port: 8080
-  server: 193.29.139.233
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-039
-  password: 4a2rfixophdjffa8KVA4Aa
-  port: 8080
-  server: 193.29.139.162
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇳🇱 NL-040
-  password: 1RWwXhwfAB5gAEozU4G2Pg
-  port: 8080
-  server: 193.29.139.143
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇳🇱 NL-041
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 79.127.227.53
-  type: ss
-- name: 🇳🇱 NL-042
+- name: 🇳🇱 NL-036
+  network: ws
+  password: humanity
+  port: 443
+  server: chatgpt.com
+  skip-cert-verify: false
+  sni: www.gossipglove.com
+  type: trojan
+  udp: true
+  ws-opts:
+    headers:
+      Host: www.gossipglove.com
+    path: /assignment
+- name: 🇳🇱 NL-037
+  network: ws
+  password: humanity
+  port: 443
+  server: 104.18.32.47
+  skip-cert-verify: true
+  sni: www.gossipglove.com
+  type: trojan
+  udp: true
+  ws-opts:
+    headers:
+      Host: www.gossipglove.com
+    path: /assignment
+- name: 🇳🇱 NL-038
   network: ws
   password: trojan
   port: 82
@@ -1032,35 +978,55 @@ proxies:
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
+  udp: true
   ws-opts:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇳🇱 NL-043
-  network: ws
-  password: trojan
-  port: 55443
-  server: 46.17.97.105
+- name: 🇳🇱 NL-039
+  password: strong-secret-pass-777
+  port: 4443
+  server: 94.131.105.125
   skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
   type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇳🇱 NL-044
-  network: ws
-  password: trojan
-  port: 7777
-  server: 46.17.101.136
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇳🇱 NL-045
+  udp: true
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-040
+  password: QCXDxuDlTTMD7jtgHUjIoj
+  port: 8080
+  server: 193.29.139.233
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-041
+  password: 4a2rfixophdjffa8KVA4Aa
+  port: 8080
+  server: 193.29.139.173
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-042
+  password: 4a2rfixophdjffa8KVA4Aa
+  port: 8080
+  server: 193.29.139.162
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-043
+  password: 1RWwXhwfAB5gAEozU4G2Pg
+  port: 8080
+  server: 193.29.139.175
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇳🇱 NL-044
+  password: 1RWwXhwfAB5gAEozU4G2Pg
+  port: 8080
+  server: 193.29.139.143
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇳🇱 NL-045
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 79.127.227.53
+  type: ss
+- name: 🇳🇱 NL-046
   network: ws
   password: trojan
   port: 587
@@ -1072,11 +1038,11 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇳🇱 NL-046
+- name: 🇳🇱 NL-047
   network: ws
   password: trojan
-  port: 443
-  server: 104.249.40.144
+  port: 12000
+  server: 91.84.102.94
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1084,7 +1050,31 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇳🇱 NL-047
+- name: 🇳🇱 NL-048
+  network: ws
+  password: trojan
+  port: 55443
+  server: 46.17.97.105
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇳🇱 NL-049
+  network: ws
+  password: trojan
+  port: 7777
+  server: 46.17.101.136
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇳🇱 NL-050
   network: ws
   password: trojan
   port: 7788
@@ -1096,47 +1086,11 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- name: 🇳🇱 NL-048
-  network: ws
-  password: trojan
-  port: 8444
-  server: 152.53.200.216
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇳🇱 NL-049
-  network: ws
-  password: trojan
-  port: 8444
-  server: 152.53.200.54
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- name: 🇳🇱 NL-050
-  network: ws
-  password: trojan
-  port: 8444
-  server: 152.53.200.230
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
 - name: 🇳🇱 NL-051
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.200.29
+  server: 38.180.18.43
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1148,7 +1102,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.200.169
+  server: 152.53.104.142
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1160,7 +1114,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.200.23
+  server: 152.53.200.83
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1184,7 +1138,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.105.238
+  server: 152.53.200.54
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1196,7 +1150,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.200.83
+  server: 152.53.200.232
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1208,7 +1162,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 38.180.18.43
+  server: 152.53.200.169
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1220,7 +1174,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.107.76
+  server: 152.53.105.238
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1232,7 +1186,7 @@ proxies:
   network: ws
   password: trojan
   port: 8444
-  server: 152.53.200.232
+  server: 152.53.200.216
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1240,18 +1194,83 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
-- cipher: chacha20-ietf-poly1305
-  name: 🇵🇦 PA-001
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 138.186.142.80
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇵🇦 PA-002
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 138.186.142.81
-  type: ss
+- name: 🇳🇱 NL-060
+  network: ws
+  password: trojan
+  port: 8444
+  server: 152.53.200.23
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇳🇱 NL-061
+  network: ws
+  password: trojan
+  port: 443
+  server: 31.172.74.123
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇳🇱 NL-062
+  network: ws
+  password: trojan
+  port: 8444
+  server: 152.53.107.76
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇳🇱 NL-063
+  password: WF42809561
+  port: 443
+  server: fun-seagull.rooster465.autos
+  skip-cert-verify: false
+  sni: fun-seagull.rooster465.autos
+  type: trojan
+- name: 🇦🇺 AU-001
+  password: IL37892054
+  port: 443
+  server: enhanced-crayfish.rooster465.autos
+  skip-cert-verify: false
+  sni: enhanced-crayfish.rooster465.autos
+  type: trojan
+  udp: true
+- name: 🇦🇺 AU-002
+  password: IL37892054
+  port: 443
+  server: steady-lemming.rooster465.autos
+  skip-cert-verify: false
+  sni: steady-lemming.rooster465.autos
+  type: trojan
+- name: 🇦🇺 AU-003
+  password: WF42809561
+  port: 443
+  server: evolving-kangaroo.rooster465.autos
+  skip-cert-verify: false
+  sni: evolving-kangaroo.rooster465.autos
+  type: trojan
+- name: 🇦🇺 AU-004
+  password: WF42809561
+  port: 443
+  server: premium-lab.rooster465.autos
+  sni: premium-lab.rooster465.autos
+  type: trojan
+- name: 🇦🇺 AU-005
+  port: 443
+  server: 103.62.50.130
+  skip-cert-verify: true
+  tls: true
+  type: http
 - cipher: chacha20-ietf-poly1305
   name: 🇬🇧 GB-001
   password: k1v5g9FefdoO
@@ -1282,21 +1301,30 @@ proxies:
   port: 8080
   server: 146.70.61.37
   type: ss
-- alterId: 0
-  cipher: auto
-  name: 🇬🇧 GB-006
-  network: ws
-  port: 80
-  server: 57.129.132.223
-  skip-cert-verify: true
-  tls: false
-  type: vmess
-  udp: true
-  uuid: a25cbf11-2908-4a1b-a3a8-9a571777dca3
-  ws-opts:
-    headers:
-      Host: google.com
-    path: /vmess/
+- cipher: chacha20-ietf-poly1305
+  name: 🇵🇦 PA-001
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 138.186.142.80
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇵🇦 PA-002
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 138.186.142.81
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇸🇪 SE-001
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 121.127.46.147
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇸🇪 SE-002
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 51.15.23.63
+  type: ss
 - name: 🇰🇷 KR-001
   password: IL37892054
   port: 443
@@ -1315,11 +1343,17 @@ proxies:
   name: 🇰🇷 KR-003
   password: f8f7aCzcPKbsF8p3
   port: 989
+  server: 154.90.62.168
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇰🇷 KR-004
+  password: f8f7aCzcPKbsF8p3
+  port: 989
   server: 154.90.63.177
   type: ss
 - alterId: 0
   cipher: auto
-  name: 🇰🇷 KR-004
+  name: 🇰🇷 KR-005
   network: ws
   port: 8443
   server: c7.620720.xyz
@@ -1331,265 +1365,221 @@ proxies:
     headers:
       Host: c7.620720.xyz
     path: /
-- name: 🇰🇷 KR-005
-  password: WF42809561
-  port: 443
-  server: casual-bullfrog.rooster465.autos
-  sni: casual-bullfrog.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-006
-  password: WF42809561
-  port: 443
-  server: engaged-lionfish.rooster465.autos
-  sni: engaged-lionfish.rooster465.autos
-  type: trojan
+- cipher: aes-256-cfb
+  name: 🇰🇷 KR-006
+  password: qwerREWQ@@
+  port: 13979
+  server: 221.139.79.57
+  type: ss
 - name: 🇰🇷 KR-007
-  password: WF42809561
-  port: 443
-  server: darling-mutt.rooster465.autos
-  sni: darling-mutt.rooster465.autos
-  type: trojan
+  port: 1090
+  server: 121.169.46.116
+  type: socks5
 - name: 🇰🇷 KR-008
-  password: WF42809561
-  port: 443
-  server: sterling-vervet.rooster465.autos
-  sni: sterling-vervet.rooster465.autos
-  type: trojan
+  password: test.+
+  port: 30446
+  server: testkr3.ssv.vc
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: test
 - name: 🇰🇷 KR-009
   password: WF42809561
   port: 443
-  server: balanced-goat.rooster465.autos
-  sni: balanced-goat.rooster465.autos
+  server: evident-gnat.rooster465.autos
+  sni: evident-gnat.rooster465.autos
   type: trojan
 - name: 🇰🇷 KR-010
-  password: WF42809561
-  port: 443
-  server: smart-pup.rooster465.autos
-  sni: smart-pup.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-011
-  password: WF42809561
-  port: 443
-  server: workable-crawdad.rooster465.autos
-  sni: workable-crawdad.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-012
-  password: WF42809561
-  port: 443
-  server: champion-alien.rooster465.autos
-  sni: champion-alien.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-013
-  password: WF42809561
-  port: 443
-  server: in-colt.rooster465.autos
-  sni: in-colt.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-014
-  password: WF42809561
-  port: 443
-  server: mutual-raccoon.rooster465.autos
-  sni: mutual-raccoon.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-015
-  password: WF42809561
-  port: 443
-  server: apt-midge.rooster465.autos
-  sni: apt-midge.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-016
-  password: WF42809561
-  port: 443
-  server: amused-peacock.rooster465.autos
-  sni: amused-peacock.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-017
-  password: WF42809561
-  port: 443
-  server: desired-tahr.rooster465.autos
-  sni: desired-tahr.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-018
-  password: WF42809561
-  port: 443
-  server: upward-yak.rooster465.autos
-  sni: upward-yak.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-019
-  password: WF42809561
-  port: 443
-  server: brave-cattle.rooster465.autos
-  sni: brave-cattle.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-020
-  password: WF42809561
-  port: 443
-  server: sterling-fowl.rooster465.autos
-  sni: sterling-fowl.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-021
-  password: WF42809561
-  port: 443
-  server: bright-quagga.rooster465.autos
-  sni: bright-quagga.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-022
-  password: WF42809561
-  port: 443
-  server: powerful-squid.rooster465.autos
-  sni: powerful-squid.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-023
   password: WF42809561
   port: 443
   server: full-ox.rooster465.autos
   sni: full-ox.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-024
+- name: 🇰🇷 KR-011
   password: WF42809561
   port: 443
-  server: exotic-chicken.rooster465.autos
-  sni: exotic-chicken.rooster465.autos
+  server: amused-peacock.rooster465.autos
+  sni: amused-peacock.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-025
+- name: 🇰🇷 KR-012
   password: WF42809561
   port: 443
-  server: ready-lion.rooster465.autos
-  sni: ready-lion.rooster465.autos
+  server: upward-yak.rooster465.autos
+  sni: upward-yak.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-026
+- name: 🇰🇷 KR-013
   password: WF42809561
   port: 443
-  server: needed-gelding.rooster465.autos
-  sni: needed-gelding.rooster465.autos
+  server: sterling-fowl.rooster465.autos
+  sni: sterling-fowl.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-027
+- name: 🇰🇷 KR-014
   password: WF42809561
   port: 443
-  server: healthy-louse.rooster465.autos
-  sni: healthy-louse.rooster465.autos
+  server: apt-midge.rooster465.autos
+  sni: apt-midge.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-028
-  password: WF42809561
-  port: 443
-  server: definite-sturgeon.rooster465.autos
-  sni: definite-sturgeon.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-029
+- name: 🇰🇷 KR-015
   password: WF42809561
   port: 443
   server: helpful-possum.rooster465.autos
   sni: helpful-possum.rooster465.autos
   type: trojan
-- name: 🇰🇷 KR-030
-  password: WF42809561
-  port: 443
-  server: electric-rhino.rooster465.autos
-  sni: electric-rhino.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-031
-  password: WF42809561
-  port: 443
-  server: chief-antelope.rooster465.autos
-  sni: chief-antelope.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-032
-  password: WF42809561
-  port: 443
-  server: true-pony.rooster465.autos
-  sni: true-pony.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-033
-  password: WF42809561
-  port: 443
-  server: curious-oryx.rooster465.autos
-  sni: curious-oryx.rooster465.autos
-  type: trojan
-- name: 🇰🇷 KR-034
+- name: 🇰🇷 KR-016
   password: WF42809561
   port: 443
   server: prepared-turkey.rooster465.autos
   sni: prepared-turkey.rooster465.autos
   type: trojan
+- name: 🇰🇷 KR-017
+  password: WF42809561
+  port: 443
+  server: chief-antelope.rooster465.autos
+  sni: chief-antelope.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-018
+  password: WF42809561
+  port: 443
+  server: brave-cattle.rooster465.autos
+  sni: brave-cattle.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-019
+  password: WF42809561
+  port: 443
+  server: smart-pup.rooster465.autos
+  sni: smart-pup.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-020
+  password: WF42809561
+  port: 443
+  server: ready-lion.rooster465.autos
+  sni: ready-lion.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-021
+  password: WF42809561
+  port: 443
+  server: champion-alien.rooster465.autos
+  sni: champion-alien.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-022
+  password: WF42809561
+  port: 443
+  server: exotic-chicken.rooster465.autos
+  sni: exotic-chicken.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-023
+  password: WF42809561
+  port: 443
+  server: true-pony.rooster465.autos
+  sni: true-pony.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-024
+  password: WF42809561
+  port: 443
+  server: in-colt.rooster465.autos
+  sni: in-colt.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-025
+  password: WF42809561
+  port: 443
+  server: workable-crawdad.rooster465.autos
+  sni: workable-crawdad.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-026
+  password: WF42809561
+  port: 443
+  server: desired-tahr.rooster465.autos
+  sni: desired-tahr.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-027
+  password: WF42809561
+  port: 443
+  server: powerful-squid.rooster465.autos
+  sni: powerful-squid.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-028
+  password: WF42809561
+  port: 443
+  server: sterling-vervet.rooster465.autos
+  sni: sterling-vervet.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-029
+  password: WF42809561
+  port: 443
+  server: needed-gelding.rooster465.autos
+  sni: needed-gelding.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-030
+  password: WF42809561
+  port: 443
+  server: mutual-raccoon.rooster465.autos
+  sni: mutual-raccoon.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-031
+  password: WF42809561
+  port: 443
+  server: darling-mutt.rooster465.autos
+  sni: darling-mutt.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-032
+  password: WF42809561
+  port: 443
+  server: curious-oryx.rooster465.autos
+  sni: curious-oryx.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-033
+  password: WF42809561
+  port: 443
+  server: engaged-lionfish.rooster465.autos
+  sni: engaged-lionfish.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-034
+  password: WF42809561
+  port: 443
+  server: healthy-louse.rooster465.autos
+  sni: healthy-louse.rooster465.autos
+  type: trojan
 - name: 🇰🇷 KR-035
+  password: WF42809561
+  port: 443
+  server: casual-bullfrog.rooster465.autos
+  sni: casual-bullfrog.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-036
+  password: WF42809561
+  port: 443
+  server: balanced-goat.rooster465.autos
+  sni: balanced-goat.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-037
+  password: WF42809561
+  port: 443
+  server: electric-rhino.rooster465.autos
+  sni: electric-rhino.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-038
+  password: WF42809561
+  port: 443
+  server: bright-quagga.rooster465.autos
+  sni: bright-quagga.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-039
+  password: WF42809561
+  port: 443
+  server: endless-kiwi.rooster465.autos
+  sni: endless-kiwi.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-040
+  password: WF42809561
+  port: 443
+  server: definite-sturgeon.rooster465.autos
+  sni: definite-sturgeon.rooster465.autos
+  type: trojan
+- name: 🇰🇷 KR-041
   network: ws
   password: trojan
   port: 11434
   server: 114.207.99.233
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- alterId: 0
-  cipher: auto
-  name: 🇰🇷 KR-036
-  network: ws
-  port: 443
-  server: chuncheon03.zgjok.com
-  servername: chuncheon03.zgjok.com
-  tls: true
-  type: vmess
-  uuid: 81d5cac4-d039-4874-9a20-c391f580012d
-  ws-opts:
-    headers:
-      Host: chuncheon03.zgjok.com
-    path: /
-- name: 🇰🇷 KR-037
-  network: ws
-  password: trojan
-  port: 17988
-  server: 175.126.186.39
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- cipher: aes-256-cfb
-  name: 🇸🇪 SE-001
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 121.127.46.147
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇸🇪 SE-002
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 51.15.23.63
-  type: ss
-- name: 🇸🇪 SE-003
-  network: ws
-  password: trojan
-  port: 12000
-  server: 207.127.89.90
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- cipher: chacha20-ietf-poly1305
-  name: 🇱🇻 LV-001
-  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
-  port: 990
-  server: 46.183.217.204
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇱🇻 LV-002
-  password: MholStyHL7DhrewKbpQa20
-  port: 24637
-  server: 185.176.221.72
-  type: ss
-- name: 🇱🇻 LV-003
-  network: ws
-  password: trojan
-  port: 442
-  server: 216.173.69.146
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -1648,6 +1638,37 @@ proxies:
       Host: jflsjlaf.pages.dev
     path: /
 - cipher: chacha20-ietf-poly1305
+  name: 🇱🇻 LV-001
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  port: 990
+  server: 46.183.217.204
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇱🇻 LV-002
+  password: MholStyHL7DhrewKbpQa20
+  port: 24637
+  server: 185.176.221.72
+  type: ss
+- name: 🇱🇻 LV-003
+  password: strong-secret-pass-777
+  port: 4443
+  server: 103.231.73.181
+  skip-cert-verify: true
+  type: trojan
+  udp: true
+- name: 🇱🇻 LV-004
+  network: ws
+  password: trojan
+  port: 442
+  server: 216.173.69.146
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- cipher: chacha20-ietf-poly1305
   name: 🇫🇮 FI-001
   password: yKVMoB3AwiTEznpnoq2FYR
   port: 28687
@@ -1660,16 +1681,10 @@ proxies:
   server: promo18v.bystrivpn.ru
   type: ss
 - cipher: chacha20-ietf-poly1305
-  name: 🇫🇮 FI-003
-  password: 2EmWRS1TkS3TkxKApnrihb3aHjDSXRvT1T1K9U2Bruxrnp5A8zmpTxwwTNje6BkVqmn9BgRF6pq8qoRHCfZdcah7BLbjrpT1
-  port: 55988
-  server: 185.5.38.111
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇫🇮 FI-004
-  password: bZ87amPpdG7KuWM62bKtm1KHoowuVjnV8CKtq653ymHcg2dPYcPJfnaQ61stuAjr2ZiLDaqH56XpkxEYuwDzzRrMWieebWGt
-  port: 55988
-  server: mx2.drawnrisha.one
+  name: 🇱🇹 LT-001
+  password: yhrHMDgZ2egKftvrecvkpUPqpUTyac7q
+  port: 8388
+  server: 195.66.25.220
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇧🇬 BG-001
@@ -1682,12 +1697,6 @@ proxies:
   password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
   port: 990
   server: 38.60.247.151
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇱🇹 LT-001
-  password: yhrHMDgZ2egKftvrecvkpUPqpUTyac7q
-  port: 8388
-  server: 195.66.25.220
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇦🇪 AE-001
@@ -1717,55 +1726,55 @@ proxies:
   name: 🇹🇼 TW-001
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg005961xa6.cybervena.com
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-002
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
   server: n8mrcg005969zt4.cybervena.com
   type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-003
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
-  server: nbmrcg003437cgb.cybervena.com
-  type: ss
 - cipher: aes-256-cfb
-  name: 🇹🇼 TW-004
+  name: 🇹🇼 TW-002
   password: qwerREWQ@@
   port: 41632
   server: 185.189.160.105
   type: ss
 - cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-005
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
-  server: n8mrcg004732fk8.cybervena.com
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-006
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
-  server: n8mrcg005988a7z.cybervena.com
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-007
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
-  server: r3mrcg007144ll4.cybervena.com
-  type: ss
-- cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-008
+  name: 🇹🇼 TW-003
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
   server: r3mrcg007175dsk.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
-  name: 🇹🇼 TW-009
+  name: 🇹🇼 TW-004
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg005961xa6.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-005
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: nbmrcg003437cgb.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-006
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg004732fk8.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-007
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg005988a7z.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-008
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
   server: n8mrcg005972g7w.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-009
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: r3mrcg007144ll4.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-010
@@ -1777,25 +1786,25 @@ proxies:
   name: 🇹🇼 TW-011
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg007116sfa.cybervena.com
+  server: 114.35.191.123
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-012
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg0011778me.cybervena.com
+  server: r3mrcg007116sfa.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-013
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: ncmrcg000110w54.cybervena.com
+  server: r3mrcg001121x36.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-014
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: 114.35.191.123
+  server: r3mrcg0011993za.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-015
@@ -1813,31 +1822,31 @@ proxies:
   name: 🇹🇼 TW-017
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg00129437x.cybervena.com
+  server: n8mrcg005958sxh.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-018
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg0011305nw.cybervena.com
+  server: n8mrcg0060292s3.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-019
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg005938lsz.cybervena.com
+  server: r3mrcg0071643p7.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-020
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: ncmrcg000138e7b.cybervena.com
+  server: r3mrcg0011305nw.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-021
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: nbmrcg003466pb9.cybervena.com
+  server: n8mrcg005938lsz.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-022
@@ -1849,151 +1858,187 @@ proxies:
   name: 🇹🇼 TW-023
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg007147vhp.cybervena.com
+  server: nbmrcg003466pb9.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-024
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg005977h4d.cybervena.com
+  server: nbmrcg003505rnd.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-025
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: namrcg001662wgh.cybervena.com
+  server: r3mrcg007147vhp.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-026
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: 1.161.246.106
+  server: ncmrcg000110w54.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-027
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg007150y7y.cybervena.com
+  server: ncmrcg000138e7b.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-028
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg001142988.cybervena.com
+  server: n8mrcg005977h4d.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-029
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: nbmrcg0034305hx.cybervena.com
+  server: r3mrcg007150y7y.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-030
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg001188p8v.cybervena.com
+  server: r3mrcg007169a5m.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-031
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: nbmrcg003494xuj.cybervena.com
+  server: r3mrcg00121233v.cybervena.com
   type: ss
-- cipher: aes-256-cfb
+- cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-032
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 154.223.20.79
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: r3mrcg001188p8v.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-033
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg001286ek2.cybervena.com
+  server: nbmrcg0034305hx.cybervena.com
   type: ss
-  udp: true
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-034
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg001162ctc.cybervena.com
+  server: namrcg002771r35.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-035
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: r3mrcg001233myh.cybervena.com
+  server: nbmrcg003494xuj.cybervena.com
   type: ss
-  udp: true
-- cipher: chacha20-ietf-poly1305
+- cipher: aes-256-cfb
   name: 🇹🇼 TW-036
-  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
-  port: 50099
-  server: r3mrcg001166nc2.cybervena.com
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 154.223.20.79
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-037
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: namrcg002765945.cybervena.com
+  server: r3mrcg001296egb.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-038
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: ncmrcg000021myh.cybervena.com
+  server: r3mrcg001257bhv.cybervena.com
   type: ss
+  udp: true
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-039
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: namrcg002799rpd.cybervena.com
+  server: r3mrcg001168e8p.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-040
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg00470027f.cybervena.com
+  server: r3mrcg001244wfw.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-041
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: namrcg002762ymv.cybervena.com
+  server: ncmrcg0001797nk.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-042
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg006016ehj.cybervena.com
+  server: r3mrcg001166nc2.cybervena.com
   type: ss
-  udp: true
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-043
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: nbmrcg0034458by.cybervena.com
+  server: namrcg002765945.cybervena.com
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-044
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: namrcg001611cy4.cybervena.com
+  server: r3mrcg007117fb8.cybervena.com
   type: ss
-  udp: true
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-045
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
-  server: n8mrcg0059867fh.cybervena.com
+  server: namrcg002762ymv.cybervena.com
   type: ss
-  udp: true
 - cipher: chacha20-ietf-poly1305
   name: 🇹🇼 TW-046
   password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
   port: 50099
   server: r3mrcg007153btm.cybervena.com
   type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-047
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: ncmrcg000021myh.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-048
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: nbmrcg0034458by.cybervena.com
+  type: ss
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-049
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg006016ehj.cybervena.com
+  type: ss
+  udp: true
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-050
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: namrcg001611cy4.cybervena.com
+  type: ss
+  udp: true
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-051
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg0059595fa.cybervena.com
+  type: ss
+  udp: true
+- cipher: chacha20-ietf-poly1305
+  name: 🇹🇼 TW-052
+  password: 7e731ec3-f8e1-43f6-92cf-3978d14705c4
+  port: 50099
+  server: n8mrcg0059867fh.cybervena.com
+  type: ss
+  udp: true
 - cipher: aes-256-cfb
   name: ❓ MT-001
   password: f8f7aCzcPKbsF8p3
@@ -2037,11 +2082,239 @@ proxies:
   port: 989
   server: 46.183.184.60
   type: ss
+- cipher: aes-128-gcm
+  name: 🇮🇳 IN-001
+  password: 93498539-7838-4836-b9b3-8311ffc79bcf
+  port: 35652
+  server: 82.180.146.173
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇮🇳 IN-002
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 134.209.147.198
+  type: ss
 - cipher: aes-256-cfb
   name: ❓ PR-001
   password: f8f7aCzcPKbsF8p3
   port: 989
   server: 185.47.255.22
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-001
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 103.163.218.2
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-002
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.50
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-003
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.180
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-004
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.232
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-005
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.38
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-006
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.214
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-007
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.194
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-008
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.202
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-009
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.251
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-010
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.17
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-011
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.209
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-012
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.25
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-013
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.12
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-014
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.33
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-015
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.28
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-016
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.32
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-017
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.178
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-018
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.46
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-019
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.52
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-020
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.30
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-021
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.235
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-022
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.231
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-023
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.13
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-024
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.31
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-025
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.20
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-026
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.22
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-027
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.24
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-028
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.5
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-029
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.69
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-030
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.16
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-031
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.155.131
+  type: ss
+  udp: true
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-032
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.18
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇻🇳 VN-033
+  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
+  port: 38388
+  server: 103.186.154.21
   type: ss
 - cipher: aes-256-cfb
   name: 🇧🇪 BE-001
@@ -2054,6 +2327,12 @@ proxies:
   password: f8f7aCzcPKbsF8p3
   port: 989
   server: 38.54.57.90
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇧🇷 BR-002
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 185.192.124.188
   type: ss
 - cipher: chacha20-ietf-poly1305
   name: ❓ MA-001
@@ -2074,12 +2353,6 @@ proxies:
   server: 138.186.143.32
   type: ss
 - cipher: aes-256-cfb
-  name: 🇬🇷 GR-001
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 192.71.166.100
-  type: ss
-- cipher: aes-256-cfb
   name: 🇲🇽 MX-001
   password: f8f7aCzcPKbsF8p3
   port: 989
@@ -2092,16 +2365,22 @@ proxies:
   server: 147.78.1.230
   type: ss
 - cipher: aes-256-cfb
-  name: 🇮🇳 IN-001
+  name: 🇬🇷 GR-001
   password: f8f7aCzcPKbsF8p3
   port: 989
-  server: 134.209.147.198
+  server: 192.71.166.100
   type: ss
 - cipher: aes-256-cfb
   name: ❓ MK-001
   password: f8f7aCzcPKbsF8p3
   port: 989
   server: 46.183.185.37
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇸🇮 SI-001
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 192.71.244.150
   type: ss
 - cipher: aes-256-cfb
   name: 🇨🇴 CO-001
@@ -2115,372 +2394,82 @@ proxies:
   port: 989
   server: 38.60.223.8
   type: ss
-- cipher: aes-256-cfb
-  name: 🇸🇮 SI-001
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 192.71.244.150
-  type: ss
 - cipher: chacha20-ietf-poly1305
   name: ❓ BO-001
   password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
   port: 990
   server: 185.93.173.60
   type: ss
-- name: 🇫🇷 FR-001
-  network: ws
-  password: humanity
-  port: 443
-  server: chatgpt.com
-  skip-cert-verify: false
-  sni: www.gossipglove.com
-  type: trojan
-  udp: true
-  ws-opts:
-    headers:
-      Host: www.gossipglove.com
-    path: /assignment
 - alterId: 0
   cipher: auto
-  name: 🇫🇷 FR-002
+  name: 🇫🇷 FR-001
   port: 45653
   server: 94.232.247.165
   skip-cert-verify: true
   tls: false
   type: vmess
   uuid: 9e91d19a-c73f-4276-adbc-b337c374259c
-- name: 🇫🇷 FR-003
-  network: ws
-  password: humanity
-  port: 443
-  server: 104.18.32.47
-  skip-cert-verify: true
-  sni: www.gossipglove.com
-  type: trojan
-  udp: true
-  ws-opts:
-    headers:
-      Host: www.gossipglove.com
-    path: /assignment
-- name: 🇫🇷 FR-004
-  password: WF42809561
-  port: 443
-  server: immense-gnu.rooster465.autos
-  sni: immense-gnu.rooster465.autos
-  type: trojan
-- name: 🇫🇷 FR-005
+- name: 🇫🇷 FR-002
   password: WF42809561
   port: 443
   server: shining-haddock.rooster465.autos
   sni: shining-haddock.rooster465.autos
   type: trojan
-- name: 🇫🇷 FR-006
+- name: 🇫🇷 FR-003
+  password: WF42809561
+  port: 443
+  server: prompt-duckling.rooster465.autos
+  sni: prompt-duckling.rooster465.autos
+  type: trojan
+- name: 🇫🇷 FR-004
   password: WF42809561
   port: 443
   server: learning-fawn.rooster465.autos
   sni: learning-fawn.rooster465.autos
   type: trojan
-- name: 🇫🇷 FR-007
-  password: WF42809561
-  port: 443
-  server: tolerant-rattler.rooster465.autos
-  sni: tolerant-rattler.rooster465.autos
-  type: trojan
-- name: 🇫🇷 FR-008
-  password: WF42809561
-  port: 443
-  server: still-mastodon.rooster465.autos
-  sni: still-mastodon.rooster465.autos
-  type: trojan
-- name: 🇫🇷 FR-009
+- name: 🇫🇷 FR-005
   password: WF42809561
   port: 443
   server: sterling-dinosaur.rooster465.autos
   sni: sterling-dinosaur.rooster465.autos
   type: trojan
-- name: 🇫🇷 FR-010
+- name: 🇫🇷 FR-006
+  password: WF42809561
+  port: 443
+  server: immense-gnu.rooster465.autos
+  sni: immense-gnu.rooster465.autos
+  type: trojan
+- name: 🇫🇷 FR-007
   password: WF42809561
   port: 443
   server: legible-ocelot.rooster465.autos
   sni: legible-ocelot.rooster465.autos
   type: trojan
 - cipher: aes-256-cfb
-  name: 🇻🇳 VN-001
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.77
+  name: 🇫🇷 FR-008
+  password: amazonskr05
+  port: 443
+  server: 13.37.222.70
   type: ss
   udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-002
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.202
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-003
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.180
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-004
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.16
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-005
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.178
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-006
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.15
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-007
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.20
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-008
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.12
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-009
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.13
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-010
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.209
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-011
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.224
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-012
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.69
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-013
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.25
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-014
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.119
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-015
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.19
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-016
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.251
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-017
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.173
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-018
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.194
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-019
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.18
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-020
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.75
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-021
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.25
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-022
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.76
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-023
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.50
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-024
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.19
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-025
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.29
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-026
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.232
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-027
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.31
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-028
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.24
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-029
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.38
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-030
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.23
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-031
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.235
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-032
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.41
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-033
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.17
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-034
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.12
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-035
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.32
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-036
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.42
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-037
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.131
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-038
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.21
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-039
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.23
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-040
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.214
-  type: ss
-  udp: true
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-041
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.154.35
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇻🇳 VN-042
-  password: Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV
-  port: 38388
-  server: 103.186.155.30
-  type: ss
-  udp: true
+- name: 🇫🇷 FR-009
+  password: WF42809561
+  port: 443
+  server: tolerant-rattler.rooster465.autos
+  sni: tolerant-rattler.rooster465.autos
+  type: trojan
+- name: 🇫🇷 FR-010
+  network: ws
+  password: trojan
+  port: 445
+  server: 109.61.110.80
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
 - name: 🇱🇺 LU-001
   network: ws
   password: Puj01Rc8UcA9IzcFcYOs8KMOhCz6aX2Q
@@ -2497,69 +2486,63 @@ proxies:
 - name: 🇮🇪 IE-001
   password: WF42809561
   port: 443
-  server: grown-goldfish.rooster465.autos
-  sni: grown-goldfish.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-002
-  password: WF42809561
-  port: 443
-  server: optimal-dane.rooster465.autos
-  sni: optimal-dane.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-003
-  password: WF42809561
-  port: 443
   server: wondrous-dogfish.rooster465.autos
   sni: wondrous-dogfish.rooster465.autos
   type: trojan
-- name: 🇮🇪 IE-004
-  password: WF42809561
-  port: 443
-  server: tough-pigeon.rooster465.autos
-  sni: tough-pigeon.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-005
-  password: WF42809561
-  port: 443
-  server: genuine-cougar.rooster465.autos
-  sni: genuine-cougar.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-006
-  password: WF42809561
-  port: 443
-  server: eternal-serval.rooster465.autos
-  sni: eternal-serval.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-007
-  password: WF42809561
-  port: 443
-  server: saving-anemone.rooster465.autos
-  sni: saving-anemone.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-008
-  password: WF42809561
-  port: 443
-  server: sharing-porpoise.rooster465.autos
-  sni: sharing-porpoise.rooster465.autos
-  type: trojan
-- name: 🇮🇪 IE-009
+- name: 🇮🇪 IE-002
   password: WF42809561
   port: 443
   server: settled-camel.rooster465.autos
   sni: settled-camel.rooster465.autos
   type: trojan
-- name: 🇮🇪 IE-010
-  network: ws
-  password: trojan
-  port: 8444
-  server: 194.4.51.171
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
+- name: 🇮🇪 IE-003
+  password: WF42809561
+  port: 443
+  server: eternal-serval.rooster465.autos
+  sni: eternal-serval.rooster465.autos
   type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
+- name: 🇮🇪 IE-004
+  password: WF42809561
+  port: 443
+  server: saving-anemone.rooster465.autos
+  sni: saving-anemone.rooster465.autos
+  type: trojan
+- name: 🇮🇪 IE-005
+  password: WF42809561
+  port: 443
+  server: sharing-porpoise.rooster465.autos
+  sni: sharing-porpoise.rooster465.autos
+  type: trojan
+- name: 🇮🇪 IE-006
+  password: WF42809561
+  port: 443
+  server: optimal-dane.rooster465.autos
+  sni: optimal-dane.rooster465.autos
+  type: trojan
+- name: 🇮🇪 IE-007
+  password: WF42809561
+  port: 443
+  server: genuine-cougar.rooster465.autos
+  sni: genuine-cougar.rooster465.autos
+  type: trojan
+- name: 🇮🇪 IE-008
+  password: WF42809561
+  port: 443
+  server: tough-pigeon.rooster465.autos
+  sni: tough-pigeon.rooster465.autos
+  type: trojan
+- cipher: aes-256-cfb
+  name: 🇪🇪 EE-001
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 185.193.49.88
+  type: ss
+- cipher: aes-256-cfb
+  name: 🇪🇪 EE-002
+  password: f8f7aCzcPKbsF8p3
+  port: 989
+  server: 188.214.36.155
+  type: ss
 - cipher: aes-256-cfb
   name: 🇪🇸 ES-001
   password: f8f7aCzcPKbsF8p3
@@ -2578,18 +2561,6 @@ proxies:
   port: 989
   server: 38.54.45.129
   type: ss
-- cipher: aes-256-cfb
-  name: 🇪🇪 EE-001
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 185.193.49.88
-  type: ss
-- cipher: aes-256-cfb
-  name: 🇪🇪 EE-002
-  password: f8f7aCzcPKbsF8p3
-  port: 989
-  server: 188.214.36.155
-  type: ss
 - cipher: chacha20-ietf-poly1305
   name: 🇪🇬 EG-001
   password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
@@ -2602,41 +2573,23 @@ proxies:
   port: 989
   server: 134.255.210.49
   type: ss
-- name: 🇮🇹 IT-001
-  network: ws
-  password: trojan
-  port: 9443
-  server: 18.102.110.23
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
-- cipher: chacha20-ietf-poly1305
-  name: 🇲🇾 MY-001
-  password: RZirHzSqyyb37DDIiQeDLZTJft5ZQGmUCwyA3wm5ath4j9Y3
-  port: 51348
-  server: 124.217.247.205
-  type: ss
-- name: 🇨🇿 CZ-001
-  network: ws
-  password: trojan
-  port: 16000
-  server: 155.133.30.9
-  skip-cert-verify: true
-  sni: jflsjlaf.pages.dev
-  type: trojan
-  ws-opts:
-    headers:
-      Host: jflsjlaf.pages.dev
-    path: /
 - name: 🇦🇹 AT-001
   network: ws
   password: trojan
   port: 8888
   server: 152.53.45.251
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- name: 🇨🇿 CZ-001
+  network: ws
+  password: trojan
+  port: 16000
+  server: 155.133.30.9
   skip-cert-verify: true
   sni: jflsjlaf.pages.dev
   type: trojan
@@ -2668,6 +2621,24 @@ proxies:
     headers:
       Host: jflsjlaf.pages.dev
     path: /
+- name: 🇮🇹 IT-001
+  network: ws
+  password: trojan
+  port: 9443
+  server: 18.102.110.23
+  skip-cert-verify: true
+  sni: jflsjlaf.pages.dev
+  type: trojan
+  ws-opts:
+    headers:
+      Host: jflsjlaf.pages.dev
+    path: /
+- cipher: chacha20-ietf-poly1305
+  name: 🇲🇾 MY-001
+  password: RZirHzSqyyb37DDIiQeDLZTJft5ZQGmUCwyA3wm5ath4j9Y3
+  port: 51348
+  server: 124.217.247.205
+  type: ss
 proxy-groups:
 - name: 🔥 ember
   proxies:
@@ -2688,15 +2659,6 @@ proxy-groups:
   - 🇸🇬 SG-007
   - 🇸🇬 SG-008
   - 🇸🇬 SG-009
-  - 🇨🇦 CA-001
-  - 🇨🇦 CA-002
-  - 🇨🇦 CA-003
-  - 🇨🇦 CA-004
-  - 🇨🇦 CA-005
-  - 🇨🇦 CA-006
-  - 🇨🇦 CA-007
-  - 🇨🇦 CA-008
-  - 🇨🇦 CA-009
   - 🇺🇸 US-001
   - 🇺🇸 US-002
   - 🇺🇸 US-003
@@ -2737,6 +2699,14 @@ proxy-groups:
   - 🇺🇸 US-038
   - 🇺🇸 US-039
   - 🇺🇸 US-040
+  - 🇨🇦 CA-001
+  - 🇨🇦 CA-002
+  - 🇨🇦 CA-003
+  - 🇨🇦 CA-004
+  - 🇨🇦 CA-005
+  - 🇨🇦 CA-006
+  - 🇨🇦 CA-007
+  - 🇨🇦 CA-008
   - 🇩🇪 DE-001
   - 🇩🇪 DE-002
   - 🇩🇪 DE-003
@@ -2757,14 +2727,13 @@ proxy-groups:
   - 🇩🇪 DE-018
   - 🇩🇪 DE-019
   - 🇩🇪 DE-020
+  - 🇪🇨 EC-001
   - 🇵🇱 PL-001
   - 🇵🇱 PL-002
   - 🇵🇱 PL-003
   - 🇵🇱 PL-004
   - 🇵🇱 PL-005
   - 🇵🇱 PL-006
-  - 🇵🇱 PL-007
-  - 🇪🇨 EC-001
   - 🇭🇰 HK-001
   - 🇭🇰 HK-002
   - 🇭🇰 HK-003
@@ -2774,11 +2743,6 @@ proxy-groups:
   - 🇭🇰 HK-007
   - 🇭🇰 HK-008
   - 🇭🇰 HK-009
-  - 🇭🇰 HK-010
-  - 🇦🇺 AU-001
-  - 🇦🇺 AU-002
-  - 🇦🇺 AU-003
-  - 🇦🇺 AU-004
   - 🇳🇱 NL-001
   - 🇳🇱 NL-002
   - 🇳🇱 NL-003
@@ -2838,14 +2802,24 @@ proxy-groups:
   - 🇳🇱 NL-057
   - 🇳🇱 NL-058
   - 🇳🇱 NL-059
-  - 🇵🇦 PA-001
-  - 🇵🇦 PA-002
+  - 🇳🇱 NL-060
+  - 🇳🇱 NL-061
+  - 🇳🇱 NL-062
+  - 🇳🇱 NL-063
+  - 🇦🇺 AU-001
+  - 🇦🇺 AU-002
+  - 🇦🇺 AU-003
+  - 🇦🇺 AU-004
+  - 🇦🇺 AU-005
   - 🇬🇧 GB-001
   - 🇬🇧 GB-002
   - 🇬🇧 GB-003
   - 🇬🇧 GB-004
   - 🇬🇧 GB-005
-  - 🇬🇧 GB-006
+  - 🇵🇦 PA-001
+  - 🇵🇦 PA-002
+  - 🇸🇪 SE-001
+  - 🇸🇪 SE-002
   - 🇰🇷 KR-001
   - 🇰🇷 KR-002
   - 🇰🇷 KR-003
@@ -2883,12 +2857,10 @@ proxy-groups:
   - 🇰🇷 KR-035
   - 🇰🇷 KR-036
   - 🇰🇷 KR-037
-  - 🇸🇪 SE-001
-  - 🇸🇪 SE-002
-  - 🇸🇪 SE-003
-  - 🇱🇻 LV-001
-  - 🇱🇻 LV-002
-  - 🇱🇻 LV-003
+  - 🇰🇷 KR-038
+  - 🇰🇷 KR-039
+  - 🇰🇷 KR-040
+  - 🇰🇷 KR-041
   - 🇯🇵 JP-001
   - 🇯🇵 JP-002
   - 🇯🇵 JP-003
@@ -2896,13 +2868,15 @@ proxy-groups:
   - 🇯🇵 JP-005
   - 🇯🇵 JP-006
   - 🇯🇵 JP-007
+  - 🇱🇻 LV-001
+  - 🇱🇻 LV-002
+  - 🇱🇻 LV-003
+  - 🇱🇻 LV-004
   - 🇫🇮 FI-001
   - 🇫🇮 FI-002
-  - 🇫🇮 FI-003
-  - 🇫🇮 FI-004
+  - 🇱🇹 LT-001
   - 🇧🇬 BG-001
   - 🇧🇬 BG-002
-  - 🇱🇹 LT-001
   - 🇦🇪 AE-001
   - 🇿🇦 ZA-001
   - 🇿🇦 ZA-002
@@ -2953,6 +2927,12 @@ proxy-groups:
   - 🇹🇼 TW-044
   - 🇹🇼 TW-045
   - 🇹🇼 TW-046
+  - 🇹🇼 TW-047
+  - 🇹🇼 TW-048
+  - 🇹🇼 TW-049
+  - 🇹🇼 TW-050
+  - 🇹🇼 TW-051
+  - 🇹🇼 TW-052
   - ❓ MT-001
   - 🇰🇿 KZ-001
   - 🇳🇴 NO-001
@@ -2960,31 +2940,9 @@ proxy-groups:
   - ❓ PY-001
   - 🇵🇰 PK-001
   - 🇭🇷 HR-001
-  - ❓ PR-001
-  - 🇧🇪 BE-001
-  - 🇧🇷 BR-001
-  - ❓ MA-001
-  - 🇵🇪 PE-001
-  - 🇵🇪 PE-002
-  - 🇬🇷 GR-001
-  - 🇲🇽 MX-001
-  - 🇲🇽 MX-002
   - 🇮🇳 IN-001
-  - ❓ MK-001
-  - 🇨🇴 CO-001
-  - 🇷🇺 RU-001
-  - 🇸🇮 SI-001
-  - ❓ BO-001
-  - 🇫🇷 FR-001
-  - 🇫🇷 FR-002
-  - 🇫🇷 FR-003
-  - 🇫🇷 FR-004
-  - 🇫🇷 FR-005
-  - 🇫🇷 FR-006
-  - 🇫🇷 FR-007
-  - 🇫🇷 FR-008
-  - 🇫🇷 FR-009
-  - 🇫🇷 FR-010
+  - 🇮🇳 IN-002
+  - ❓ PR-001
   - 🇻🇳 VN-001
   - 🇻🇳 VN-002
   - 🇻🇳 VN-003
@@ -3018,15 +2976,30 @@ proxy-groups:
   - 🇻🇳 VN-031
   - 🇻🇳 VN-032
   - 🇻🇳 VN-033
-  - 🇻🇳 VN-034
-  - 🇻🇳 VN-035
-  - 🇻🇳 VN-036
-  - 🇻🇳 VN-037
-  - 🇻🇳 VN-038
-  - 🇻🇳 VN-039
-  - 🇻🇳 VN-040
-  - 🇻🇳 VN-041
-  - 🇻🇳 VN-042
+  - 🇧🇪 BE-001
+  - 🇧🇷 BR-001
+  - 🇧🇷 BR-002
+  - ❓ MA-001
+  - 🇵🇪 PE-001
+  - 🇵🇪 PE-002
+  - 🇲🇽 MX-001
+  - 🇲🇽 MX-002
+  - 🇬🇷 GR-001
+  - ❓ MK-001
+  - 🇸🇮 SI-001
+  - 🇨🇴 CO-001
+  - 🇷🇺 RU-001
+  - ❓ BO-001
+  - 🇫🇷 FR-001
+  - 🇫🇷 FR-002
+  - 🇫🇷 FR-003
+  - 🇫🇷 FR-004
+  - 🇫🇷 FR-005
+  - 🇫🇷 FR-006
+  - 🇫🇷 FR-007
+  - 🇫🇷 FR-008
+  - 🇫🇷 FR-009
+  - 🇫🇷 FR-010
   - 🇱🇺 LU-001
   - 🇮🇪 IE-001
   - 🇮🇪 IE-002
@@ -3036,21 +3009,19 @@ proxy-groups:
   - 🇮🇪 IE-006
   - 🇮🇪 IE-007
   - 🇮🇪 IE-008
-  - 🇮🇪 IE-009
-  - 🇮🇪 IE-010
+  - 🇪🇪 EE-001
+  - 🇪🇪 EE-002
   - 🇪🇸 ES-001
   - 🇦🇷 AR-001
   - 🇦🇷 AR-002
-  - 🇪🇪 EE-001
-  - 🇪🇪 EE-002
   - 🇪🇬 EG-001
   - ❓ CY-001
-  - 🇮🇹 IT-001
-  - 🇲🇾 MY-001
-  - 🇨🇿 CZ-001
   - 🇦🇹 AT-001
+  - 🇨🇿 CZ-001
   - 🇨🇭 CH-001
   - 🇹🇷 TR-001
+  - 🇮🇹 IT-001
+  - 🇲🇾 MY-001
   type: url-test
   url: https://www.gstatic.com/generate_204
 - interval: 300
