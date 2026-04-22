@@ -22,10 +22,18 @@ jobs:
     timeout-minutes: 180
 
     steps:
-      - name: Checkout repository
+      - name: Checkout latest main
         uses: actions/checkout@v4
         with:
+          ref: main
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync with remote main
+        run: |
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -45,9 +53,15 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
+
           git add clash.yaml
-          git diff --staged --quiet || (
-            git pull --rebase origin main || true
-            git commit -m "🔄 Auto-update clash.yaml"
-            git push
-          )
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "🔄 Update proxies"
+
+          git pull --rebase origin main || true
+          git push origin main
