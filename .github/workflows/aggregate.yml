@@ -2,8 +2,8 @@ name: Aggregate Clash Subscriptions
 
 on:
   schedule:
-    - cron: '30 */2 * * *'  # 30 mins past of rvery 2 hour
-  workflow_dispatch:  # Manual trigger
+    - cron: '30 * * * *'   # 30 mins past of every hour
+  workflow_dispatch:
 #  push:
 #    paths:
 #      - 'sources.txt'
@@ -12,33 +12,42 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: clash-aggregator
+  cancel-in-progress: false
+
 jobs:
   aggregate:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 180
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        pip install pyyaml requests pytz geoip2
-    
-    - name: Run aggregator with Subconverter + Clash
-      env:
-        MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
-      run: python aggregator.py
-    
-    - name: Commit and push if changed
-      run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git add clash.yaml
-        git diff --staged --quiet || (git commit -m "🔄 Update proxies [Subconverter + Clash]" && git push)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests pytz geoip2
+
+      - name: Run aggregator
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+        run: python aggregator.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add clash.yaml
+          git diff --staged --quiet || (
+            git pull --rebase origin main || true
+            git commit -m "🔄 Auto-update clash.yaml"
+            git push
+          )
