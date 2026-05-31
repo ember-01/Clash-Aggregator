@@ -15,8 +15,10 @@ https://raw.githubusercontent.com/arshiacomplus/v2rayExtractor/refs/heads/main/m
 https://raw.githubusercontent.com/Surfboardv2ray/TGParse/refs/heads/main/splitted/mixed
 https://raw.githubusercontent.com/liketolivefree/kobabi/refs/heads/main/sub.txt
 https://raw.githubusercontent.com/shabane/kamaji/master/hub/merged.txt
-
-
+https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha.txt
+https://raw.githubusercontent.com/MustafaBaqer/VestraNet-Nodes/main/subscriptions/mix-normal.txt
+https://raw.githubusercontent.com/iboxz/free-v2ray-collector/main/main/mix.txt
+https://raw.githubusercontent.com/Danialsamadi/v2go/main/AllConfigsSub.txt
 
 
 
