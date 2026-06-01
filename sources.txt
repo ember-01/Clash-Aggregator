@@ -20,8 +20,3 @@ https://raw.githubusercontent.com/iboxz/free-v2ray-collector/main/main/mix.txt
 #https://raw.githubusercontent.com/Danialsamadi/v2go/main/AllConfigsSub.txt
 https://raw.githubusercontent.com/nyeinkokoaung404/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt
 https://raw.githubusercontent.com/PuddinCat/BestClash/refs/heads/main/proxies.yaml
-https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/hy2.txt
-#https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/ss.txt
-#https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/trojan.txt
-#https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/vless.txt
-https://raw.githubusercontent.com/wiki/gfpcom/free-proxy-list/lists/vmess.txt
