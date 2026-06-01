@@ -354,27 +354,44 @@ def generate_yaml(filename, proxies, update_time):
         yaml.dump(output, f, allow_unicode=True, default_flow_style=False)
         f.write("\ntun:\n  enable: true\n  stack: system\n  dns-hijack:\n  - any:53\n  auto-route: true\n  auto-detect-interface: true\n")
 
+import sys
+
 def main():
+    # Configuration - allows overriding via command line
+    # Usage: python3 aggregator.py [sources_file] [output_name]
+    input_file = sys.argv[1] if len(sys.argv) > 1 else 'sources.txt'
+    output_base = sys.argv[2] if len(sys.argv) > 2 else 'clash'
+    
+    print(f"🚀 Running Aggregator: {input_file} -> {output_base}.yaml")
+    
     start_time = time.time()
     if not download_clash_core(): return
     
     try:
-        with open('sources.txt', 'r') as f:
+        with open(input_file, 'r') as f:
             urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-    except: return
+    except Exception as e:
+        print(f"❌ Error reading {input_file}: {e}")
+        return
 
     all_nodes = fetch_all_subscriptions(urls)
-    if not all_nodes: return
+    if not all_nodes:
+        print("❌ No nodes found in any subscription")
+        return
     
     unique_nodes = deduplicate_nodes(all_nodes)
     reachable_nodes = pre_filter_nodes(unique_nodes)
-    if not reachable_nodes: return
+    if not reachable_nodes:
+        print("❌ No reachable nodes found")
+        return
     
     tester = ProxyTester()
     tested_nodes = tester.test_proxies(reachable_nodes)
     
     real_proxies = [node for node in tested_nodes if node.get('test_result', {}).get('is_proxy')]
-    if not real_proxies: return
+    if not real_proxies:
+        print("❌ No real working proxies found (all tests failed or went direct)")
+        return
     
     country_map = defaultdict(list)
     for node in real_proxies:
@@ -404,9 +421,13 @@ def main():
     tz = pytz.timezone('Asia/Yangon')
     update_time = datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S MMT')
 
-    generate_yaml('clash.yaml', prioritized_list, update_time)
-    generate_yaml('clash_lite.yaml', prioritized_list[:2000], update_time)
-    print(f"\n🚀 Done! Total: {len(prioritized_list)} nodes. Time: {time.time() - start_time:.1f}s")
+    # Generate files based on output_base
+    generate_yaml(f'{output_base}.yaml', prioritized_list, update_time)
+    generate_yaml(f'{output_base}_lite.yaml', prioritized_list[:2000], update_time)
+    
+    print(f"\n✅ Completed: {len(prioritized_list)} nodes.")
+    print(f"🕐 Time: {time.time() - start_time:.1f}s")
 
 if __name__ == "__main__":
     main()
+    
