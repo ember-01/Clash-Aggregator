@@ -17,3 +17,5 @@ https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main
 https://raw.githubusercontent.com/iboxz/free-v2ray-collector/main/main/mix.txt
 https://raw.githubusercontent.com/nyeinkokoaung404/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt
 https://raw.githubusercontent.com/PuddinCat/BestClash/refs/heads/main/proxies.yaml
+https://raw.githubusercontent.com/hello-world-1989/cn-news/refs/heads/main/clash.yaml
+
