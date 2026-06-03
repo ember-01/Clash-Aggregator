@@ -21,3 +21,9 @@ https://raw.githubusercontent.com/hello-world-1989/cn-news/refs/heads/main/clash
 https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/naidounode.txt
 https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/v2rayshare.txt
 https://raw.githubusercontent.com/shaoyouvip/free/main/all.yaml
+
+https://raw.githubusercontent.com/free-nodes/clashfree/refs/heads/main/clash20260603.yml
+
+
+
+
