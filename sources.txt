@@ -24,6 +24,6 @@ https://raw.githubusercontent.com/shaoyouvip/free/main/all.yaml
 
 https://raw.githubusercontent.com/free-nodes/clashfree/refs/heads/main/clash20260603.yml
 
-
+https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/clash.yaml
 
 
