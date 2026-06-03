@@ -20,4 +20,4 @@ https://raw.githubusercontent.com/PuddinCat/BestClash/refs/heads/main/proxies.ya
 https://raw.githubusercontent.com/hello-world-1989/cn-news/refs/heads/main/clash.yaml
 https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/naidounode.txt
 https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/v2rayshare.txt
-
+https://raw.githubusercontent.com/shaoyouvip/free/main/all.yaml
