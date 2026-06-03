@@ -1,6 +1,3 @@
-https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/Countries/Singapore.txt
-https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/Countries/United_States.txt
-https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/Countries/Us.txt
-https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Clash/BLACK_VLESS_RUS_mobile.yaml
-https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Clash/BLACK_VLESS_RUS.yaml
-
+https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/refs/heads/main/data/githubmirror/clean/ss.txt
+https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/refs/heads/main/data/githubmirror/clean/trojan.txt
+https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/refs/heads/main/data/githubmirror/clean/tuic.txt
