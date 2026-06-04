@@ -26,4 +26,6 @@ https://raw.githubusercontent.com/free-nodes/clashfree/refs/heads/main/clash2026
 
 https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/clash.yaml
 https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/clash.yaml
+https://raw.githubusercontent.com/ts-sf/fly/main/clash
+
 
