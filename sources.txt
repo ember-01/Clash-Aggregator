@@ -22,8 +22,8 @@ https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/n
 https://raw.githubusercontent.com/xiaoji235/airport-free/refs/heads/main/clash/v2rayshare.txt
 https://raw.githubusercontent.com/shaoyouvip/free/main/all.yaml
 
-https://raw.githubusercontent.com/free-nodes/clashfree/refs/heads/main/clash20260603.yml
+https://raw.githubusercontent.com/free-nodes/clashfree/refs/heads/main/clash20260605.yml
 
 https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/clash.yaml
-
+https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/clash.yaml
 
