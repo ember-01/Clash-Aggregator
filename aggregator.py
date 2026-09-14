@@ -340,11 +340,11 @@ def get_flag_emoji(code):
     return flags.get(code.upper(), '❓')
 
 def generate_yaml(filename, proxies, update_time):
-    sg_node_names = [p['name'] for p in proxies if ['🇸🇬','🇺🇸'] in p['name']]
+    favorite_node_names = [p['name'] for p in proxies if any(x in p['name'] for x in ['SG', 'US'])]
     all_node_names = [p['name'] for p in proxies]
     output = {
         'proxies': proxies,
-        'proxy-groups': create_proxy_groups(all_node_names, sg_node_names),
+        'proxy-groups': create_proxy_groups(all_node_names, favorite_node_names),
         'rules': ['MATCH,🔥 ember']
     }
     with open(filename, 'w', encoding='utf-8') as f:
