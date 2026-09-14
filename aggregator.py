@@ -312,9 +312,9 @@ def deduplicate_nodes(nodes):
 
 def create_proxy_groups(all_names, sg_names):
     return [
-        {'name': '🔥 ember', 'type': 'select', 'proxies': ['🌏 ⚡', '🇸🇬 ⚡']},
+        {'name': '🔥 ember', 'type': 'select', 'proxies': ['🌏 ⚡', '🇸🇬 🇺🇸']},
         {'name': '🌏 ⚡', 'type': 'url-test', 'proxies': all_names, 'url': 'https://www.gstatic.com/generate_204', 'interval': 300},
-        {'name': '🇸🇬 ⚡', 'type': 'url-test', 'proxies': sg_names if sg_names else ['DIRECT'], 'url': 'https://www.gstatic.com/generate_204', 'interval': 300}
+        {'name': '🇸🇬 🇺🇸', 'type': 'url-test', 'proxies': sg_names if sg_names else ['DIRECT'], 'url': 'https://www.gstatic.com/generate_204', 'interval': 300}
     ]
 
 def get_flag_emoji(code):
@@ -340,12 +340,12 @@ def get_flag_emoji(code):
     return flags.get(code.upper(), '❓')
 
 def generate_yaml(filename, proxies, update_time):
-    sg_node_names = [p['name'] for p in proxies if '🇸🇬' in p['name']]
+    sg_node_names = [p['name'] for p in proxies if ['🇸🇬','🇺🇸'] in p['name']]
     all_node_names = [p['name'] for p in proxies]
     output = {
         'proxies': proxies,
         'proxy-groups': create_proxy_groups(all_node_names, sg_node_names),
-        'rules': ['GEOIP,PRIVATE,DIRECT', 'MATCH,🔥 ember']
+        'rules': ['MATCH,🔥 ember']
     }
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(f"# Last Update: {update_time}\n")
